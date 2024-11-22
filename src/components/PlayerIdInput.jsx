@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function PlayerIdInput({ onInputChange }) {
+function PlayerIdInput({ onInputChange, disabled }) {
     const [inputValue, setInputValue] = useState('');
 
     const handleChange = (event) => {
@@ -18,12 +18,14 @@ function PlayerIdInput({ onInputChange }) {
                 id="playerIdInput"
                 value={inputValue}
                 onChange={handleChange}
-                className="
+                disabled={disabled}
+                className={`
                 h-12
               px-4 py-2 mx-4 text-lg text-dark bg-white rounded-xl shadow-md outline-none
               transition-all duration-200
               focus:ring-2 focus:ring-main
-              "
+              ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg hover:duration-100'}
+              `}
                 placeholder="your player id"
             />
         </>
