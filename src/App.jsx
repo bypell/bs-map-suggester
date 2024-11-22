@@ -11,6 +11,7 @@ export default function App() {
   function handleClick() {
     console.log(playerId);
     setLoading(true);
+
   }
 
   return (
