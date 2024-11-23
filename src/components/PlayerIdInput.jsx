@@ -12,19 +12,33 @@ function PlayerIdInput({ onValidPlayerEntered, disabled }) {
         setInputValue(value);
     };
 
-    function handleDebounced(value) {
-        // console.log('debounced', value);
+    function handleBlur(event) {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+            setIsFocused(false);
+        }
+    };
+
+    async function handleDebounced(value) {
+        setPlayerSearchResults([]);
         if (value.length < 3) {
             setPlayerSearchResults([]);
             return;
         }
 
-        getPlayers(value).then(players => {
-            setPlayerSearchResults(players.slice(0, 4));
-            console.log(players.slice(0, 6));
-        });
+        try {
+            const players = await getPlayers(value);
+            setPlayerSearchResults(players.slice(0, 5));
+            onValidPlayerEntered(value);
+        } catch (error) {
+            console.error('Error fetching players:', error);
+        }
 
-        onValidPlayerEntered(value);
+    }
+
+    function handleSelectedSuggestedPlayer(event) {
+        const playerName = event.target.textContent;
+        setInputValue(playerName);
+        setIsFocused(false);
 
     }
 
@@ -37,19 +51,18 @@ function PlayerIdInput({ onValidPlayerEntered, disabled }) {
     }, [inputValue]);
 
     return (<>
-        <div className="relative flex mx-4" onFocus={() => setIsFocused(true)} onBlur={() => setIsFocused(false)}>
-            {/*suggestion thingy*/}
-            <div className={` absolute h-40 pt-14 w-full ${playerSearchResults.length === 0 || !isFocused ? 'hidden' : 'block'}
-                  text-lg text-dark bg-less-dark rounded-xl shadow-md
-                  transition-all duration-200
-                  focus:ring-2 focus:ring-main`}
+        <div className="relative flex mx-4" onFocus={() => setIsFocused(true)} onBlur={handleBlur}>
+            {/*player suggestions */}
+            <div className={`absolute pt-14 w-full text-lg text-dark bg-less-dark rounded-xl transition-all duration-200 ease-in-out overflow-hidden ${playerSearchResults.length === 0 || !isFocused ? 'max-h-0 bg-opacity-0 shadow-none' : 'max-h-96 bg-opacity-100 shadow-md'}`}
                 style={{ height: `${(playerSearchResults.length + 2) * 32}px` }}
             >
-                {/* underline text when hover */}
                 {playerSearchResults.map(player => (
-                    <button key={player.id} className="flex flex-row w-full justify-between items-center px-4 mt-1 text-white hover:cursor-pointer bg-less-dark hover:bg-even-less-dark hover:shadow-lg hover:duration-200 active:bg-even-even-less-dark active:duration-100
-            active:ring-2 active:ring-main">
+                    <button key={player.id} className="flex flex-row relative w-full h-8 justify-between items-center px-4 text-white hover:cursor-pointer hover:bg-even-less-dark hover:shadow-lg hover:duration-200 active:bg-even-even-less-dark active:duration-100
+            active:ring-2 active:ring-main"
+                        onClick={handleSelectedSuggestedPlayer}
+                    >
                         <p>{player.name}</p>
+                        <img src={player.profilePicture} alt="" className="w-6 h-6 rounded-full absolute right-1" />
                     </button>
                 ))}
             </div>
