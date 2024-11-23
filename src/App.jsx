@@ -18,11 +18,11 @@ export default function App() {
     <>
       <div className="h-screen w-screen bg-dark text-white flex flex-col justify-center items-center">
         <Header />
-        <div className="flex-row">
-          <PlayerIdInput onInputChange={(text) => setPlayerId(text)} disabled={loading} />
+        <div className="flex flex-row">
+          <PlayerIdInput onValidPlayerEntered={(id) => setPlayerId(id)} disabled={loading} />
           <LoaderButton onClick={handleClick} disabled={loading} />
         </div>
-        <div className={`relative mt-10 ${loading ? 'block' : 'hidden'}`}>
+        <div className={`mt-10 ${loading ? 'block' : 'hidden'}`}>
           <div
             className="w-8 h-8 rounded-full animate-spin absolute  border-4 border-solid border-gray-400 border-t-transparent">
           </div>
