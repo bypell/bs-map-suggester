@@ -65,7 +65,7 @@ function PlayerIdInput({ onValidPlayerEntered, disabled }) {
                     placeholder="your scoresaber username"
                 />
                 {isLoading && isFocused && (
-                    <div className="absolute inset-y-0 right-0 flex items-center pr-7 pointer-events-none">
+                    <div className="absolute inset-y-0 right-0 mr-1 flex items-center pr-7 pointer-events-none">
                         <Spinner size='5' thickness='2' />
                     </div>
                 )}
