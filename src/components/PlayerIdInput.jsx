@@ -10,6 +10,7 @@ function PlayerIdInput({ onValidPlayerEntered, disabled }) {
 
 
     function handleChange(event) {
+        if (!isFocused) return;
         const value = event.target.value;
         setInputValue(value);
     };
@@ -19,12 +20,6 @@ function PlayerIdInput({ onValidPlayerEntered, disabled }) {
             setIsFocused(false);
         }
     };
-
-    function handleSelectedSuggestedPlayer(event) {
-        const playerName = event.target.textContent;
-        setInputValue(playerName);
-        setIsFocused(false);
-    }
 
     function handleSelectedSuggestedPlayer(player) {
         const playerName = player.name;
