@@ -1,3 +1,4 @@
+import Spinner from "./components/common/Spinner.jsx";
 import Header from "./components/Header"
 import LoaderButton from "./components/LoaderButton"
 import PlayerIdInput from "./components/PlayerIdInput.jsx"
@@ -23,9 +24,7 @@ export default function App() {
           <LoaderButton onClick={handleClick} disabled={loading} />
         </div>
         <div className={`mt-10 ${loading ? 'block' : 'hidden'}`}>
-          <div
-            className="w-8 h-8 rounded-full animate-spin absolute  border-4 border-solid border-gray-400 border-t-transparent">
-          </div>
+          <Spinner />
         </div>
       </div>
     </>
