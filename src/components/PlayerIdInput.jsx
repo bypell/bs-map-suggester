@@ -38,7 +38,7 @@ function PlayerIdInput({ onValidPlayerEntered, disabled }) {
             <div className={`overflow-y-auto overflow-x-hidden max-h-[calc(40vh-10px)] absolute pt-14 px-1 pb-2 w-full text-lg text-dark bg-less-dark rounded-xl transition-all duration-200 ease-in-out ${!playerSearchResults || playerSearchResults.length === 0 || !isFocused ? 'max-h-0 bg-opacity-0 shadow-none hidden' : 'bg-opacity-100 shadow-md'}`}
             >
                 {playerSearchResults && playerSearchResults.map(player => (
-                    <button key={player.id} className="flex flex-row w-full h-8 justify-between items-center px-4 text-white hover:cursor-pointer hover:bg-even-less-dark hover:shadow-lg hover:duration-200 active:z-10 active:bg-even-even-less-dark active:duration-100 active:ring-2 active:ring-main outline-none"
+                    <button key={player.id} className="relative flex flex-row w-full h-8 justify-between items-center px-4 text-white hover:cursor-pointer hover:bg-even-less-dark hover:shadow-lg hover:duration-200 active:z-10 active:bg-even-even-less-dark active:duration-100 active:ring-2 active:ring-main outline-none"
                         onClick={() => handleSelectedSuggestedPlayer(player)}
                         title={`${player.name} (#${player.rank})`}
                     >
