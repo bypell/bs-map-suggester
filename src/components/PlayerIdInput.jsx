@@ -60,7 +60,8 @@ function PlayerIdInput({ onValidPlayerEntered, disabled }) {
                     text-dark bg-white rounded-xl shadow-md outline-none
                     transition-all duration-200
                     focus:ring-2 focus:ring-main
-                    ${disabled ? 'opacity-50 cursor-not-allowed' : 'hover:shadow-lg hover:duration-100'}
+                    hover:shadow-lg hover:duration-100
+                    ${disabled && 'opacity-50 cursor-default'}
                     `}
                     placeholder="your scoresaber username"
                 />
