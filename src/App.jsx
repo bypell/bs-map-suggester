@@ -1,11 +1,11 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import SelectPlayerPage from './components/pages/SelectPlayerPage';
+import PlayerSelectPage from './components/pages/PlayerSelectPage';
 import ErrorPage from './components/pages/errorPage';
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <SelectPlayerPage />,
+    element: <PlayerSelectPage />,
     errorElement: <ErrorPage />
   },
   {

@@ -25,6 +25,7 @@ function PlayerIdInput({ onValidPlayerEntered, disabled }) {
         const playerName = player.name;
         setInputValue(playerName);
         setIsFocused(false);
+        onValidPlayerEntered(player.id);
     }
 
     return (<>
@@ -63,7 +64,7 @@ function PlayerIdInput({ onValidPlayerEntered, disabled }) {
                     hover:shadow-lg hover:duration-100
                     ${disabled && 'opacity-50 cursor-default'}
                     `}
-                    placeholder="your scoresaber username"
+                    placeholder="Search yourself"
                 />
                 {isLoading && isFocused && (
                     <div className="absolute inset-y-0 right-0 mr-1 flex items-center pr-7 pointer-events-none">

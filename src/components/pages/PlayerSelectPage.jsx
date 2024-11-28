@@ -1,16 +1,21 @@
 import { useState } from 'react';
-import Spinner from '../../components/common/Spinner.jsx'
-import Header from "../../components/Header";
-import LoaderButton from "../../components/LoaderButton";
-import PlayerIdInput from "../../components/PlayerIdInput.jsx";
+import Spinner from '../common/Spinner.jsx'
+import Header from "../Header.jsx";
+import LoaderButton from "../LoaderButton.jsx";
+import PlayerIdInput from "../PlayerIdInput.jsx";
 
-export default function SelectPlayerPage() {
+import { getMapSuggestionsForUser } from '../../services/suggestMapsService';
+
+export default function PlayerSelectPage() {
     const [playerId, setPlayerId] = useState('');
     const [loading, setLoading] = useState(false);
 
     function handleClick() {
         console.log(playerId);
         setLoading(true);
+        getMapSuggestionsForUser(playerId)
+            .then(() => setLoading(false))
+            .catch(() => setLoading(false));
     }
 
     return (
