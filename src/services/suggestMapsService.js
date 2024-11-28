@@ -22,10 +22,3 @@ export async function getMapSuggestionsForUser(playerId) {
     }
 
 }
-
-async function getPlayerJudgementsAroundUserOnLeaderboard(leaderboardId, startLeaderboardPage, leaderboardScoresOnPageUserIsIn, userPlacementIndexOnPage) {
-    // look up at scores up to 30pp above player, stop at 20 players or if the index is 0 on page 1
-    // returns objects that contain the player id and how close to the player is on the leaderboard (rating A)
-
-
-}

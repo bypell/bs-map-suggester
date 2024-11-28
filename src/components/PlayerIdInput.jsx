@@ -46,7 +46,7 @@ function PlayerIdInput({ onValidPlayerEntered, disabled }) {
             </div>
 
             {/* Input field with spinner */}
-            <div className="relative w-full">
+            <div className="relative w-full z-20">
                 <input
                     type="text"
                     id="playerIdInput"

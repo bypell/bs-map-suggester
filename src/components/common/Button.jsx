@@ -9,7 +9,7 @@ function Button({ text, className, onClick, disabled }) {
                 transition-all duration-200
                 active:bg-even-even-less-dark active:duration-100
                 active:ring-2 active:ring-main
-                hover:shadow-lg hover:duration-100 hover:bg-even-less-dark
+                hover:shadow-lg hover:duration-75 hover:bg-even-less-dark
                 disabled:opacity-50 disabled:cursor-default disabled:ring-0 disabled:bg-less-dark
                 `}>{text}
         </button >
