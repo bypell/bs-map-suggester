@@ -1,13 +1,17 @@
 import { getPlayerTopPlays } from '../api/players';
 import { getLeaderboardPageScores } from '../api/leaderboards';
+import { countDaysBetweenStringAndString } from '../utils/helpers';
 
 const LEADERBOARD_SCORES_PER_PAGE = 12; // TODO: could be fetched dynamically instead of hardcoded
+const MAX_PP_DISTANCE = 30;
+const MAX_PLAYERS = 10;
 
 export async function getMapSuggestionsForUser(playerId) {
     // 1. take top 30 plays of user
     const topScoresOfUser = await getPlayerTopPlays(playerId, 30);
 
     // 2. take first 30 players around positions in leaderboards. only scores max 30pp above or below
+    let playersOfInterest = [];
     for (let i = 0; i < topScoresOfUser.length; i++) {
         const leaderboardScore = topScoresOfUser[i];
 
@@ -23,112 +27,183 @@ export async function getMapSuggestionsForUser(playerId) {
         const userPlacementIndexOnPage = userPlacementOnPage === 0 ? LEADERBOARD_SCORES_PER_PAGE - 1 : userPlacementOnPage - 1;
         const userScore = leaderboardScore.score;
 
-        await getPlayerJudgementsAroundUserOnLeaderboard(leaderboardId, leaderboardPage, leaderboardScoresOnPageUserIsIn, userPlacementIndexOnPage, userScore, totalScoresOnLeaderboard)
+        const playersAroundUser = await getPlayerJudgementsAroundUserOnLeaderboard(
+            leaderboardId,
+            leaderboardPage,
+            leaderboardScoresOnPageUserIsIn,
+            userPlacementIndexOnPage,
+            userScore,
+            totalScoresOnLeaderboard
+        );
+
+        // add parameter userScoreNum to each player
+        playersAroundUser.forEach(player => {
+            player.userScoreNum = i;
+        });
+
+        playersOfInterest.push(...playersAroundUser);
     }
+
+    playersOfInterest = playersOfInterest.reduce((acc, current) => {
+        const x = acc.find(item => item.playerId === current.playerId);
+        if (!x) {
+            current.nbRepeat = 1;
+            return acc.concat([current]);
+        } else {
+            x.ppDistanceToUser = (x.ppDistanceToUser + current.ppDistanceToUser) / 2;
+            x.userScoreNum = (x.userScoreNum + current.userScoreNum) / 2;
+            x.nbRepeat = x.nbRepeat + 1;
+            x.playerSetTimeDaysToUserSetTime = (x.playerSetTimeDaysToUserSetTime + current.playerSetTimeDaysToUserSetTime) / 2;
+            return acc;
+        }
+    }, []);
+
+    // set ratingA of each player to 1 - (ppDistanceToUser / MAX_PP_DISTANCE)
+    playersOfInterest.forEach(player => {
+        player.ratingA = 1 - Math.min(1, player.ppDistanceToUser / MAX_PP_DISTANCE);
+        delete player.ppDistanceToUser;
+    });
+
+    // set rating B of each player to 1 - (userScoreNum / maxScoreNum)
+    const maxScoreNum = Math.max(...playersOfInterest.map(player => player.userScoreNum));
+    playersOfInterest.forEach(player => {
+        player.ratingB = 1 - (player.userScoreNum / maxScoreNum);
+        delete player.userScoreNum;
+    });
+
+    // set rating C of each player to nbRepeat / maxNbRepeat
+    const maxNbRepeat = Math.max(...playersOfInterest.map(player => player.nbRepeat));
+    playersOfInterest.forEach(player => {
+        player.ratingC = maxNbRepeat > 0 ? player.nbRepeat / maxNbRepeat : 0; // Handle division by zero
+        delete player.nbRepeat;
+    });
+
+    // sort desc by (A*0.1 + B * 0.3 + C * 0.6)
+    const SHARE_A = 0.1; // avg pp distance
+    const SHARE_B = 0.4; // avg userscorenum
+    const SHARE_C = 0.5; // nbRepeat
+    playersOfInterest.sort((a, b) => {
+        const ratingA = a.ratingA * SHARE_A;
+        const ratingB = a.ratingB * SHARE_B;
+        const ratingC = a.ratingC * SHARE_C;
+        const totalRatingA = ratingA + ratingB + ratingC;
+
+        const ratingA2 = b.ratingA * SHARE_A;
+        const ratingB2 = b.ratingB * SHARE_B;
+        const ratingC2 = b.ratingC * SHARE_C;
+        const totalRatingB = ratingA2 + ratingB2 + ratingC2;
+
+        return totalRatingB - totalRatingA;
+    });
+
+    console.log("Players of interest:", playersOfInterest);
+
+    // finding maps of interest on those players' profiles
 
 }
 
-async function getPlayerJudgementsAroundUserOnLeaderboard(leaderboardId, startLeaderboardPage, leaderboardScoresOnPageUserIsIn, userPlacementIndexOnPage, userScore, totalScoresOnLeaderboard) {
-    let playersAbove = [];
-    let playersBelow = [];
+async function getPlayerJudgementsAroundUserOnLeaderboard(
+    leaderboardId,
+    startLeaderboardPage,
+    leaderboardScoresOnPageUserIsIn,
+    userPlacementIndexOnPage,
+    userScore,
+    totalScoresOnLeaderboard
+) {
+    const playersAbove = [];
+    const playersBelow = [];
 
-    let currentPlacementOnPageIndexChecking = userPlacementIndexOnPage;
-    let currentPage = startLeaderboardPage;
-    let currentPageScores = leaderboardScoresOnPageUserIsIn;
-    let playersAdded = 0;
-
-    goingUpLoop:
-    while (currentPage > 0) {
-        // go up through players until we reach start of page
-        while (currentPlacementOnPageIndexChecking > -1) {
-
-            // if score is more than 30pp above, we can stop looking
-            const scorePP = currentPageScores[currentPlacementOnPageIndexChecking].pp;
-            if (userScore.pp + 30 < scorePP) {
-                break goingUpLoop;
-            }
-
-            playersAbove.push({
-                ppDistanceToUser: Math.abs(userScore.pp - scorePP),
-                playerName: currentPageScores[currentPlacementOnPageIndexChecking].leaderboardPlayerInfo.name,
-                playerId: currentPageScores[currentPlacementOnPageIndexChecking].leaderboardPlayerInfo.id
-            });
-
-            // if we have added 15 players, we can stop looking
-            playersAdded++;
-            if (playersAdded >= 15) {
-                break goingUpLoop;
-            }
-
-            currentPlacementOnPageIndexChecking--;
+    async function fetchLeaderboardPage(page) {
+        try {
+            const pageData = await getLeaderboardPageScores(leaderboardId, page);
+            return {
+                scores: pageData.scores,
+                totalScores: pageData.metadata.total,
+            };
+        } catch (error) {
+            console.error(`Error fetching leaderboard page ${page}:`, error);
+            return { scores: [], totalScores: totalScoresOnLeaderboard };
         }
-
-        // if we are done with the first page, we stop here because there's no other scores above to check
-        if (currentPage == 1) {
-            break;
-        }
-
-        // otherwise, we fetch data for previous page and reset some variables
-        currentPage--;
-        const poopoo = await getLeaderboardPageScores(leaderboardId, currentPage);
-        currentPageScores = poopoo.scores;
-        totalScoresOnLeaderboard = poopoo.metadata.total;
-        currentPlacementOnPageIndexChecking = LEADERBOARD_SCORES_PER_PAGE - 1; // set to last index because we have loaded a new page
     }
 
-    playersAbove.shift(); // remove first element because it's the user itself
+    async function findPlayersAbove() {
+        let currentPage = startLeaderboardPage;
+        let currentPlacement = userPlacementIndexOnPage;
+        let playersAdded = -1;
+        let currentPageScores = leaderboardScoresOnPageUserIsIn;
 
-    currentPlacementOnPageIndexChecking = userPlacementIndexOnPage;
-    currentPage = startLeaderboardPage;
-    currentPageScores = leaderboardScoresOnPageUserIsIn;
-    playersAdded = 0;
+        while (currentPage > 0) {
+            while (currentPlacement >= 0) {
+                const score = currentPageScores[currentPlacement];
+                const ppDistance = userScore.pp - score.pp;
 
-    let lastScoreRankChecked = userScore.rank;
-    goingDownLoop:
-    while (lastScoreRankChecked <= totalScoresOnLeaderboard) {
+                if (ppDistance < -MAX_PP_DISTANCE) return; // too far above
+                playersAbove.push(formatPlayerData(score, ppDistance));
+                playersAdded++;
 
-        // go down through players until we reach end of scores
-        while (currentPlacementOnPageIndexChecking < LEADERBOARD_SCORES_PER_PAGE && lastScoreRankChecked <= totalScoresOnLeaderboard) {
-            // if score is more than 30pp below, we can stop looking
-            const scorePP = currentPageScores[currentPlacementOnPageIndexChecking].pp;
-            if (userScore.pp - 30 > scorePP) {
-                break goingDownLoop;
+                if (playersAdded >= MAX_PLAYERS) return; // reached max players
+                currentPlacement--;
             }
 
-            playersBelow.push({
-                ppDistanceToUser: Math.abs(userScore.pp - scorePP),
-                playerName: currentPageScores[currentPlacementOnPageIndexChecking].leaderboardPlayerInfo.name,
-                playerId: currentPageScores[currentPlacementOnPageIndexChecking].leaderboardPlayerInfo.id
-            });
+            if (currentPage === 1) break; // no more pages above
 
-            // if we have added 15 players, we can stop looking
-            playersAdded++;
-            if (playersAdded >= 15) {
-                break goingDownLoop;
-            }
-
-            lastScoreRankChecked = currentPageScores[currentPlacementOnPageIndexChecking].rank;
-            currentPlacementOnPageIndexChecking++;
-
+            currentPage--;
+            const pageData = await fetchLeaderboardPage(currentPage);
+            currentPageScores = pageData.scores;
+            currentPlacement = currentPageScores.length - 1; // start at the last index
         }
-
-        // if we are done with the first page, we stop here because there's no other scores above to check
-        // if (currentPage == 1) {
-        //     break;
-        // }
-
-        if (lastScoreRankChecked >= totalScoresOnLeaderboard) {
-            break;
-        }
-
-        // otherwise, we fetch data for previous page and reset some variables
-        currentPage++;
-        const poopoo = await getLeaderboardPageScores(leaderboardId, currentPage);
-        currentPageScores = poopoo.scores;
-        totalScoresOnLeaderboard = poopoo.metadata.total;
-        currentPlacementOnPageIndexChecking = 0; // set to first index because we have loaded a new page
     }
 
-    console.log("above", playersAbove);
-    console.log("below", playersBelow);
+    async function findPlayersBelow() {
+        let currentPage = startLeaderboardPage;
+        let currentPlacement = userPlacementIndexOnPage;
+        let playersAdded = -1;
+        let currentPageScores = leaderboardScoresOnPageUserIsIn;
+        let lastScoreRankChecked = userScore.rank;
+
+        while (lastScoreRankChecked <= totalScoresOnLeaderboard) {
+            while (
+                currentPlacement < currentPageScores.length &&
+                lastScoreRankChecked <= totalScoresOnLeaderboard
+            ) {
+                const score = currentPageScores[currentPlacement];
+                const ppDistance = score.pp - userScore.pp;
+
+                if (countDaysBetweenStringAndString(score.timeSet, userScore.timeSet) > 250) return; // too far in time compared to time of user's score
+
+                if (ppDistance > MAX_PP_DISTANCE) return; // too far below
+                playersBelow.push(formatPlayerData(score, ppDistance));
+                playersAdded++;
+
+                if (playersAdded >= MAX_PLAYERS) return; // reached max players
+                lastScoreRankChecked = score.rank;
+                currentPlacement++;
+            }
+
+            if (lastScoreRankChecked >= totalScoresOnLeaderboard) break; // no more players below
+
+            currentPage++;
+            const pageData = await fetchLeaderboardPage(currentPage);
+            currentPageScores = pageData.scores;
+            currentPlacement = 0; // start at the first index
+        }
+    }
+
+    function formatPlayerData(score, ppDistance) {
+        return {
+            ppDistanceToUser: Math.abs(ppDistance),
+            playerName: score.leaderboardPlayerInfo.name,
+            playerId: score.leaderboardPlayerInfo.id,
+        };
+    }
+
+    await findPlayersAbove();
+    await findPlayersBelow();
+
+    // first of each array is the user
+    playersAbove.shift();
+    playersBelow.shift();
+
+    // return list of players COMBINED
+    return playersAbove.concat(playersBelow);
 }
