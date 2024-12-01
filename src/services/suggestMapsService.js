@@ -3,14 +3,14 @@ import { getLeaderboardPageScores } from '../api/leaderboards';
 import { countDaysBetweenStringAndString } from '../utils/helpers';
 
 const LEADERBOARD_SCORES_PER_PAGE = 12; // TODO: could be fetched dynamically instead of hardcoded
-const MAX_PP_DISTANCE = 30;
+const MAX_PP_DISTANCE = 15;
 const MAX_PLAYERS = 10;
 
 export async function getMapSuggestionsForUser(playerId) {
     // 1. take top 30 plays of user
     const topScoresOfUser = await getPlayerTopPlays(playerId, 30);
 
-    // 2. take first 30 players around positions in leaderboards. only scores max 30pp above or below
+    // 2. take first 30 players around positions in leaderboards. only scores max 15pp above or below
     let playersOfInterest = [];
     for (let i = 0; i < topScoresOfUser.length; i++) {
         const leaderboardScore = topScoresOfUser[i];
@@ -53,7 +53,6 @@ export async function getMapSuggestionsForUser(playerId) {
             x.ppDistanceToUser = (x.ppDistanceToUser + current.ppDistanceToUser) / 2;
             x.userScoreNum = (x.userScoreNum + current.userScoreNum) / 2;
             x.nbRepeat = x.nbRepeat + 1;
-            x.playerSetTimeDaysToUserSetTime = (x.playerSetTimeDaysToUserSetTime + current.playerSetTimeDaysToUserSetTime) / 2;
             return acc;
         }
     }, []);
@@ -74,13 +73,13 @@ export async function getMapSuggestionsForUser(playerId) {
     // set rating C of each player to nbRepeat / maxNbRepeat
     const maxNbRepeat = Math.max(...playersOfInterest.map(player => player.nbRepeat));
     playersOfInterest.forEach(player => {
-        player.ratingC = maxNbRepeat > 0 ? player.nbRepeat / maxNbRepeat : 0; // Handle division by zero
+        player.ratingC = maxNbRepeat > 0 ? player.nbRepeat / maxNbRepeat : 0;
         delete player.nbRepeat;
     });
 
     // sort desc by (A*0.1 + B * 0.3 + C * 0.6)
-    const SHARE_A = 0.1; // avg pp distance
-    const SHARE_B = 0.4; // avg userscorenum
+    const SHARE_A = 0.2; // avg pp distance
+    const SHARE_B = 0.3; // avg userscorenum
     const SHARE_C = 0.5; // nbRepeat
     playersOfInterest.sort((a, b) => {
         const ratingA = a.ratingA * SHARE_A;
@@ -95,10 +94,28 @@ export async function getMapSuggestionsForUser(playerId) {
 
         return totalRatingB - totalRatingA;
     });
-
-    console.log("Players of interest:", playersOfInterest);
+    console.log(playersOfInterest);
 
     // finding maps of interest on those players' profiles
+    // get top 10 maps of top 2 players
+    const mapsOfInterest = [];
+    for (let i = 0; i < Math.min(2, playersOfInterest.length); i++) {
+        const player = playersOfInterest[i];
+        const topScoresOfPlayer = await getPlayerTopPlays(player.playerId, 10);
+        const topMapsOfPlayer = topScoresOfPlayer.map(score => score.leaderboard);
+        mapsOfInterest.push(...topMapsOfPlayer);
+        console.log(topMapsOfPlayer, player.name);
+    }
+
+    // return the top 10 unique maps
+    // const uniqueMapsOfInterest = Array.from(new Set(mapsOfInterest.map(map => map.id))).map(id => {
+    //     return mapsOfInterest.find(map => map.id === id);
+    // });
+
+    return mapsOfInterest;
+
+
+    return [];
 
 }
 

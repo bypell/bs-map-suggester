@@ -1,21 +1,25 @@
 import { useState } from 'react';
-import Spinner from '../common/Spinner.jsx'
+import { useNavigate } from 'react-router-dom';
+import Spinner from '../common/Spinner.jsx';
 import Header from "../Header.jsx";
 import LoaderButton from "../LoaderButton.jsx";
 import PlayerIdInput from "../PlayerIdInput.jsx";
-
-import { getMapSuggestionsForUser } from '../../services/suggestMapsService';
+import { useMapSuggestions } from '../../hooks/useMapSuggestions';
 
 export default function PlayerSelectPage() {
     const [playerId, setPlayerId] = useState('');
-    const [loading, setLoading] = useState(false);
+    const { loading, suggestions, error, fetchMapSuggestions } = useMapSuggestions();
+    const navigate = useNavigate();
 
-    function handleClick() {
+    async function handleClick() {
         console.log(playerId);
-        setLoading(true);
-        getMapSuggestionsForUser(playerId)
-            .then(() => setLoading(false))
-            .catch(() => setLoading(false));
+
+        if (!playerId) {
+            return;
+        }
+
+        await fetchMapSuggestions(playerId);
+        navigate(`/suggestions`);
     }
 
     return (
@@ -25,9 +29,10 @@ export default function PlayerSelectPage() {
                 <PlayerIdInput onValidPlayerEntered={(id) => setPlayerId(id)} disabled={loading} />
                 <LoaderButton text="Get Suggestions" onClick={handleClick} disabled={loading} />
             </div>
-            <div className={`absolute mt-[calc(30vh-10px)] ${loading ? 'block' : 'hidden'}`}>
+            <div className={`flex flex-row mt-10 ${loading ? 'block' : 'hidden'}`}>
                 <Spinner />
             </div>
+            {error && <div className="text-red-500 mt-4">Error: {error.message}</div>}
         </div>
     );
 }
