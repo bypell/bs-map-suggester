@@ -1,5 +1,5 @@
 import { getPlayerTopPlays } from '../api/players';
-import { getLeaderboardPageScores } from '../api/leaderboards';
+import { getLeaderboardPageScores, getLoaderboardFull } from '../api/leaderboards';
 import { countDaysBetweenStringAndString } from '../utils/helpers';
 
 const LEADERBOARD_SCORES_PER_PAGE = 12; // TODO: could be fetched dynamically instead of hardcoded
@@ -97,25 +97,49 @@ export async function getMapSuggestionsForUser(playerId) {
     console.log(playersOfInterest);
 
     // finding maps of interest on those players' profiles
-    // get top 10 maps of top 2 players
+    // get top 10 maps of top 5 players
     const mapsOfInterest = [];
-    for (let i = 0; i < Math.min(2, playersOfInterest.length); i++) {
+    for (let i = 0; i < Math.min(5, playersOfInterest.length); i++) {
         const player = playersOfInterest[i];
         const topScoresOfPlayer = await getPlayerTopPlays(player.playerId, 10);
         const topMapsOfPlayer = topScoresOfPlayer.map(score => score.leaderboard);
         mapsOfInterest.push(...topMapsOfPlayer);
-        console.log(topMapsOfPlayer, player.name);
     }
 
-    // return the top 10 unique maps
-    // const uniqueMapsOfInterest = Array.from(new Set(mapsOfInterest.map(map => map.id))).map(id => {
-    //     return mapsOfInterest.find(map => map.id === id);
-    // });
-
-    return mapsOfInterest;
+    // remove duplicates, remove ones that are in top 30 of user
+    const topScoresOfUserIds = topScoresOfUser.map(score => score.leaderboard.id);
+    let filteredMaps = mapsOfInterest.filter(map => !topScoresOfUserIds.includes(map.id));
 
 
-    return [];
+
+    // add star rating to each map by fetching the complete leaderboard data
+    for (let i = 0; i < filteredMaps.length; i++) {
+        const map = filteredMaps[i];
+        const leaderboardData = await getLoaderboardFull(map.id);
+        filteredMaps[i].stars = leaderboardData.stars;
+    }
+
+    // add star rating to each top play by user by fetching the complete leaderboard data
+    for (let i = 0; i < topScoresOfUser.length; i++) {
+        const score = topScoresOfUser[i];
+        const leaderboardData = await getLoaderboardFull(score.leaderboard.id);
+        topScoresOfUser[i].leaderboard.stars = leaderboardData.stars;
+    }
+
+
+
+    const maxStarRatingOfTopPlaysOfUser = Math.max(...topScoresOfUser.map(score => score.leaderboard.stars));
+    const minStarRatingOfMapsOfInterest = Math.min(...mapsOfInterest.map(map => map.stars));
+
+    // filter out maps that may be too hard or too easy
+    filteredMaps = filteredMaps.filter(
+        map => map.stars >= minStarRatingOfMapsOfInterest && map.stars <= maxStarRatingOfTopPlaysOfUser
+    );
+
+    console.log("filt ", filteredMaps);
+
+
+    return filteredMaps;
 
 }
 

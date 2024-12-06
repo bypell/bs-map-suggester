@@ -1,35 +1,29 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import Spinner from '../common/Spinner.jsx';
-import Header from "../Header.jsx";
-import LoaderButton from "../LoaderButton.jsx";
-import PlayerIdInput from "../PlayerIdInput.jsx";
-import { useMapSuggestions } from '../../hooks/useMapSuggestions';
+import { useLocation } from 'react-router-dom';
 
-export default function PlayerSelectPage() {
-    const { loading, suggestions, error, fetchMapSuggestions } = useMapSuggestions();
-    const navigate = useNavigate();
+export default function MapSuggestionsPage() {
+    const location = useLocation();
+    const { suggestions = [] } = location.state || {};
 
     return (
-        <div className="h-screen w-screen relative bg-dark text-white flex flex-col justify-center items-center">
-            {suggestions &&
+        <div className="relative text-white flex flex-col justify-center items-center">
+            {suggestions.length > 0 ? (
                 <div className="mt-4">
                     <h2 className="text-2xl">Map Suggestions</h2>
                     <ul>
                         {suggestions.map((map, index) => (
                             <li key={map.id}>
-                                <span>{map.id}. </span>
+                                <span>{index + 1}. </span>
                                 <span>{map.songName}</span>
+                                <span> {map.id} </span>
                             </li>
                         ))}
                     </ul>
                 </div>
-            }
+            ) : (
+                <div className="mt-4">
+                    <h2 className="text-2xl">No suggestions available</h2>
+                </div>
+            )}
         </div>
     );
 }
-
-
-
-
-
