@@ -3,14 +3,13 @@ import * as playersApi from '../api/players';
 export async function getMapSuggestionsForUser(playerId) {
     const userBasicData = await playersApi.getPlayerBasic(playerId);
 
-
     // 1. take top 20 plays of user
     const topScoresOfUser = await playersApi.getPlayerTopPlays(playerId, 20);
 
     // 2. get 50 players above user on global leaderboard
     const playersToGet = 50;
     const userRank = userBasicData.rank;
-    const playersPerPage = 50; // TODO: unlikely to change in the future so I'm hardcoding this for now
+    const playersPerPage = 50; // TODO: unlikely to change in the future so I'm hardcoding this for now. WE LOVE MAGIC NUMBERS!
     let userPlacementOnPage = userRank % playersPerPage;
     if (userPlacementOnPage === 0) {
         userPlacementOnPage = playersPerPage;
@@ -41,20 +40,56 @@ export async function getMapSuggestionsForUser(playerId) {
         playerIds.map(playerId => playersApi.getPlayerTopPlays(playerId, 20))
     );
 
-    const topMapsOfPlayers = {};
+    const topScoresOfPlayersDictionary = {};
     for (let i = 0; i < playerIds.length; i++) {
-        topMapsOfPlayers[playerIds[i]] = topScoresOfPlayers[i].map(score => score.leaderboard.id);
+        topScoresOfPlayersDictionary[playerIds[i]] = topScoresOfPlayers[i].map(score => score);
     }
-    console.log("topMapsOfPlayers ", topMapsOfPlayers);
+    console.log("topScoresOfPlayersDictionary ", topScoresOfPlayersDictionary);
 
     // 4. order player ids by how many maps they have in common with user
-    const topMapsOfUser = topScoresOfUser.map(score => score.leaderboard.id);
-    const playerIdsOrderedByCommonality = playerIds.sort((a, b) => {
-        const aCommonMaps = topMapsOfPlayers[a].filter(mapId => topMapsOfUser.includes(mapId)).length;
-        const bCommonMaps = topMapsOfPlayers[b].filter(mapId => topMapsOfUser.includes(mapId)).length;
-        return bCommonMaps - aCommonMaps;
+    const playerIdsOrderedByNumberOfCommonMaps = Object.keys(topScoresOfPlayersDictionary).sort((a, b) => {
+        const aNumberOfCommonMaps = topScoresOfPlayersDictionary[a].filter(score => topScoresOfUser.some(topScore => topScore.leaderboard.id === score.leaderboard.id)).length;
+        const bNumberOfCommonMaps = topScoresOfPlayersDictionary[b].filter(score => topScoresOfUser.some(topScore => topScore.leaderboard.id === score.leaderboard.id)).length;
+        return bNumberOfCommonMaps - aNumberOfCommonMaps;
     });
-    console.log("playerIdsOrderedByCommonality ", playerIdsOrderedByCommonality);
+    console.log("playerIdsOrderedByNumberOfCommonMaps ", playerIdsOrderedByNumberOfCommonMaps);
+
+    // 5. reorder topScoresOfPlayers by playerIdsOrderedByNumberOfCommonMaps
+    topScoresOfPlayers = playerIdsOrderedByNumberOfCommonMaps.map(playerId => topScoresOfPlayersDictionary[playerId]);
+
+    // 6. flatten the array 
+    topScoresOfPlayers = topScoresOfPlayers.flat();
+    console.log("topScoresOfPlayers ", topScoresOfPlayers);
+
+    // 7. cap star rating
+    const userMaxStarRatingInTopPlays = topScoresOfUser.map(score => score.leaderboard.stars).reduce((a, b) => Math.max(a, b));
+    const maxStarRating = userMaxStarRatingInTopPlays * 1.1;
+    topScoresOfPlayers = topScoresOfPlayers.filter(score => score.leaderboard.stars <= maxStarRating);
+
+    // 8. create an array for the maps
+    const maps = [];
+    for (let i = 0; i < topScoresOfPlayers.length; i++) {
+        const map = topScoresOfPlayers[i].leaderboard;
+        maps.push(map);
+    }
+
+    // 9. remove duplicates and give them a number for the number of times they appear
+    const mapsDictionary = {};
+    for (let i = 0; i < maps.length; i++) {
+        const map = maps[i];
+        if (mapsDictionary[map.id]) {
+            mapsDictionary[map.id].count += 1;
+        }
+        else {
+            mapsDictionary[map.id] = { ...map, count: 1 };
+        }
+    }
+    const mapsArray = Object.values(mapsDictionary);
+    console.log("mapsArray ", mapsArray);
+
+    // 10. sort by count
+    const mapsArraySortedByCount = mapsArray.sort((a, b) => b.count - a.count);
+    console.log("mapsArraySortedByCount ", mapsArraySortedByCount);
 
 
 
