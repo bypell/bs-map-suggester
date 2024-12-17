@@ -37,10 +37,9 @@ export async function getMapSuggestionsForUser(playerId) {
     console.log("playerIds ", playerIds);
 
     // 3. get top 20 plays of each player above user on global leaderboard
-    const topScoresOfPlayers = [];
-    for (let i = 0; i < playerIds.length; i++) {
-        topScoresOfPlayers.push(await playersApi.getPlayerTopPlays(playerIds[i], 20));
-    }
+    const topScoresOfPlayers = await Promise.all(
+        playerIds.map(playerId => playersApi.getPlayerTopPlays(playerId, 20))
+    );
     console.log("topScoresOfPlayers ", topScoresOfPlayers);
 
 
