@@ -37,10 +37,26 @@ export async function getMapSuggestionsForUser(playerId) {
     console.log("playerIds ", playerIds);
 
     // 3. get top 20 plays of each player above user on global leaderboard
-    const topScoresOfPlayers = await Promise.all(
+    let topScoresOfPlayers = await Promise.all(
         playerIds.map(playerId => playersApi.getPlayerTopPlays(playerId, 20))
     );
-    console.log("topScoresOfPlayers ", topScoresOfPlayers);
+
+    const topMapsOfPlayers = {};
+    for (let i = 0; i < playerIds.length; i++) {
+        topMapsOfPlayers[playerIds[i]] = topScoresOfPlayers[i].map(score => score.leaderboard.id);
+    }
+    console.log("topMapsOfPlayers ", topMapsOfPlayers);
+
+    // 4. order player ids by how many maps they have in common with user
+    const topMapsOfUser = topScoresOfUser.map(score => score.leaderboard.id);
+    const playerIdsOrderedByCommonality = playerIds.sort((a, b) => {
+        const aCommonMaps = topMapsOfPlayers[a].filter(mapId => topMapsOfUser.includes(mapId)).length;
+        const bCommonMaps = topMapsOfPlayers[b].filter(mapId => topMapsOfUser.includes(mapId)).length;
+        return bCommonMaps - aCommonMaps;
+    });
+    console.log("playerIdsOrderedByCommonality ", playerIdsOrderedByCommonality);
+
+
 
 
 
