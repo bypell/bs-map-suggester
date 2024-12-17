@@ -10,7 +10,7 @@ export async function getLeaderboardPageScores(leaderboardId, page) {
     }
 }
 
-export async function getLoaderboardFull(leaderboardId) {
+export async function getLeaderboardFull(leaderboardId) {
     try {
         const response = await fetch(`/api/leaderboard/by-id/${leaderboardId}/info`);
         const data = await response.json();
