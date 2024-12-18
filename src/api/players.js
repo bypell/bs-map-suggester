@@ -25,6 +25,19 @@ export async function getPlayerTopPlays(playerId, howMany) {
     }
 }
 
+export async function getPlayerRecentPlays(playerId, howMany) {
+    try {
+        const response = await fetch(`api/player/${playerId}/scores?limit=${howMany}&sort=recent`);
+        const data = await response.json();
+        return data.playerScores;
+    }
+    catch (error) {
+        if (error?.response?.status === 404) {
+            return [];
+        }
+    }
+}
+
 export async function getPlayersOnPage(page) {
     try {
         const response = await fetch(`/api/players?page=${page}&withMetadata=false`);

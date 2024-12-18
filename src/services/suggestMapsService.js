@@ -125,15 +125,23 @@ export async function getMapSuggestionsForUser(playerId) {
     // console.log("topScoresSorted ", topScoresSorted);
 
     // cap star rating
-    const userMaxStarRatingInTopPlays = 9;//topScoresOfUser.map(score => score.leaderboard.stars).reduce((a, b) => Math.max(a, b));
+    const userMaxStarRatingInTopPlays = topScoresOfUser.map(score => score.leaderboard.stars).reduce((a, b) => Math.max(a, b));
     const maxStarRating = userMaxStarRatingInTopPlays * 1.05;
     const topScoresSortedCapped = topScoresSorted.filter(score => score.leaderboard.stars <= maxStarRating);
     // console.log("topScoresSortedCapped ", topScoresSortedCapped);
 
-    // remove maps that the user already has a decent score on
-    const userTopScoresLonger = await playersApi.getPlayerTopPlays(playerId, 60);
-    const mapsUserHasPlayed = userTopScoresLonger.map(score => score.leaderboard.id);
-    const topScoresSortedCappedFiltered = topScoresSortedCapped.filter(score => !mapsUserHasPlayed.includes(score.leaderboard.id));
+    // remove maps that the user already has a decent score on or played recently
+    const [userTopScoresLonger, userRecentScores] = await Promise.all([
+        playersApi.getPlayerTopPlays(playerId, 50),
+        playersApi.getPlayerRecentPlays(playerId, 50)
+    ]);
+
+    const mapsUserHasPlayed = new Set([
+        ...userTopScoresLonger.map(score => score.leaderboard.id),
+        ...userRecentScores.map(score => score.leaderboard.id)
+    ]);
+
+    const topScoresSortedCappedFiltered = topScoresSortedCapped.filter(score => !mapsUserHasPlayed.has(score.leaderboard.id));
     console.log("topScoresSortedCappedFiltered ", topScoresSortedCappedFiltered);
 
     return topScoresSortedCappedFiltered;
