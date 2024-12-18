@@ -67,6 +67,9 @@ export async function getMapSuggestionsForUser(playerId) {
     for (const playerId in playersToTopScores) {
         playersToTopScores[playerId].forEach(score => {
             score.playerSimilarityToUserRating = score.playerNbCommonMaps / maxNbCommonMaps;
+            if (!score.playerSimilarityToUserRating) {
+                score.playerSimilarityToUserRating = 0;
+            }
             delete score.playerNbCommonMaps;
         });
     }
