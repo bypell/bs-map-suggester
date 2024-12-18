@@ -10,11 +10,11 @@ export default function MapSuggestionsPage() {
                 <div className="mt-4">
                     <h2 className="text-2xl">Map Suggestions</h2>
                     <ul>
-                        {suggestions.map((map, index) => (
-                            <li key={map.id}>
+                        {suggestions.map((suggestion, index) => (
+                            <li key={suggestion.leaderboard.id}>
                                 <span>{index + 1}. </span>
-                                <span>{map.songName}</span>
-                                <span> {map.id} </span>
+                                <span>{suggestion.leaderboard.songName}</span>
+                                <span> {suggestion.leaderboard.id} </span>
                             </li>
                         ))}
                     </ul>

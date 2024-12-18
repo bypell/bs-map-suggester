@@ -10,7 +10,7 @@ export async function getMapSuggestionsForUser(playerId) {
     }
 
     // get 50 players above user on global leaderboard
-    const playersToGet = 50;
+    const playersToGet = 100;
     const userRank = userBasicData.rank;
     const playersPerPage = 50; // TODO: unlikely to change in the future so I'm hardcoding this for now. WE LOVE MAGIC NUMBERS!
     let userPlacementOnPage = userRank % playersPerPage;
@@ -46,6 +46,10 @@ export async function getMapSuggestionsForUser(playerId) {
     const playersToTopScores = {};
     for (let i = 0; i < playerIds.length; i++) {
         playersToTopScores[playerIds[i]] = topScoresOfPlayers[i];
+
+        playersToTopScores[playerIds[i]].forEach(score => {
+            score.playerDistanceToUser = playerIds.length - i;
+        });
     }
     // console.log("playersToTopScores ", playersToTopScores);
 
@@ -104,16 +108,24 @@ export async function getMapSuggestionsForUser(playerId) {
     }
     // console.log("topScores ", topScores);
 
+    // replace playerDifferenceToUser with rating
+    const maxPlayerDistanceToUser = topScores.map(score => score.playerDistanceToUser).reduce((a, b) => Math.max(a, b));
+    for (let i = 0; i < topScores.length; i++) {
+        topScores[i].playerDistanceToUserRating = topScores[i].playerDistanceToUser / maxPlayerDistanceToUser;
+        delete topScores[i].playerDistanceToUser;
+    }
+    // console.log("topScores ", topScores);
+
     // sort using ratings
     const topScoresSorted = topScores.sort((a, b) => {
-        const aRating = a.playerSimilarityToUserRating * 0.5 + a.mapPopularityRating * 0.5;
-        const bRating = b.playerSimilarityToUserRating * 0.5 + b.mapPopularityRating * 0.5;
-        return bRating - aRating;
+        const ratingA = a.mapPopularityRating / 3 + a.playerSimilarityToUserRating / 3 + a.playerDistanceToUserRating / 3;
+        const ratingB = b.mapPopularityRating / 3 + b.playerSimilarityToUserRating / 3 + b.playerDistanceToUserRating / 3;
+        return ratingB - ratingA;
     });
     // console.log("topScoresSorted ", topScoresSorted);
 
     // cap star rating
-    const userMaxStarRatingInTopPlays = topScoresOfUser.map(score => score.leaderboard.stars).reduce((a, b) => Math.max(a, b));
+    const userMaxStarRatingInTopPlays = 9;//topScoresOfUser.map(score => score.leaderboard.stars).reduce((a, b) => Math.max(a, b));
     const maxStarRating = userMaxStarRatingInTopPlays * 1.05;
     const topScoresSortedCapped = topScoresSorted.filter(score => score.leaderboard.stars <= maxStarRating);
     // console.log("topScoresSortedCapped ", topScoresSortedCapped);
@@ -123,5 +135,7 @@ export async function getMapSuggestionsForUser(playerId) {
     const mapsUserHasPlayed = userTopScoresLonger.map(score => score.leaderboard.id);
     const topScoresSortedCappedFiltered = topScoresSortedCapped.filter(score => !mapsUserHasPlayed.includes(score.leaderboard.id));
     console.log("topScoresSortedCappedFiltered ", topScoresSortedCappedFiltered);
+
+    return topScoresSortedCappedFiltered;
 
 }
