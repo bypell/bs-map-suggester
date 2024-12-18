@@ -29,16 +29,18 @@ export default function PlayerSelectPage() {
     }
 
     return (
-        <div className="h-screen w-screen relative text-white flex flex-col justify-center items-center overflow-hidden">
-            <Header />
-            <div className="flex flex-row">
-                <PlayerIdInput onValidPlayerEntered={(id) => setPlayerId(id)} disabled={loading} />
-                <LoaderButton text="Get Suggestions" onClick={handleClick} disabled={loading} />
+        <div className="h-screen w-screen relative text-white bg-less-dark flex flex-col justify-center items-center overflow-hidden">
+            <div className="flex flex-col items-center p-16 py-32 bg-dark rounded-lg">
+                <Header />
+                <div className="flex flex-row">
+                    <PlayerIdInput onValidPlayerEntered={(id) => setPlayerId(id)} disabled={loading} />
+                    <LoaderButton text="Get Suggestions" onClick={handleClick} disabled={loading} />
+                </div>
+                <div className={`flex flex-row mt-10`}>
+                    {loading && <Spinner />}
+                    {error && <div className="text-red-500 mt-4">Error: {error.message}</div>}
+                </div>
             </div>
-            <div className={`flex flex-row mt-10 ${loading ? 'block' : 'hidden'}`}>
-                <Spinner />
-            </div>
-            {error && <div className="text-red-500 mt-4">Error: {error.message}</div>}
         </div>
     );
 }
