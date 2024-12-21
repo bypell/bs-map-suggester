@@ -154,6 +154,19 @@ export async function getMapSuggestionsForUser(playerId) {
     const topScoresSortedCappedFiltered = topScoresSortedCapped.filter(score => !mapsUserHasPlayed.has(score.leaderboard.id));
     console.log("topScoresSortedCappedFiltered ", topScoresSortedCappedFiltered);
 
-    return topScoresSortedCappedFiltered;
+
+    const suggestions = [];
+    for (let i = 0; i < topScoresSortedCappedFiltered.length; i++) {
+        const suggestion = {
+            leaderboard: topScoresSortedCappedFiltered[i].leaderboard,
+            relevantScores: topScoresSortedCappedFiltered[i].score,
+            mapPopularityRating: topScoresSortedCappedFiltered[i].mapPopularityRating,
+            playerDistanceToUserRating: topScoresSortedCappedFiltered[i].playerDistanceToUserRating,
+            playerSimilarityToUserRating: topScoresSortedCappedFiltered[i].playerSimilarityToUserRating
+        };
+        suggestions.push(suggestion);
+    }
+
+    return suggestions;
 
 }
