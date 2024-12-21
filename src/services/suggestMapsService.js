@@ -117,10 +117,20 @@ export async function getMapSuggestionsForUser(playerId) {
     // console.log("topScores ", topScores);
 
     // sort using ratings
+    const mapPopularityWeight = 0.3;
+    const playerDistanceWeight = 0.3;
+    const playerSimilarityWeight = 0.3;
+
     const topScoresSorted = topScores.sort((a, b) => {
-        const ratingA = a.mapPopularityRating / 3 + a.playerSimilarityToUserRating / 3 + a.playerDistanceToUserRating / 3;
-        const ratingB = b.mapPopularityRating / 3 + b.playerSimilarityToUserRating / 3 + b.playerDistanceToUserRating / 3;
-        return ratingB - ratingA;
+        const aWeightedScore = (a.mapPopularityRating * mapPopularityWeight) +
+            (a.playerDistanceToUserRating * playerDistanceWeight) +
+            (a.playerSimilarityToUserRating * playerSimilarityWeight);
+
+        const bWeightedScore = (b.mapPopularityRating * mapPopularityWeight) +
+            (b.playerDistanceToUserRating * playerDistanceWeight) +
+            (b.playerSimilarityToUserRating * playerSimilarityWeight);
+
+        return bWeightedScore - aWeightedScore;
     });
     // console.log("topScoresSorted ", topScoresSorted);
 
