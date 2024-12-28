@@ -4,6 +4,7 @@ import './index.css'
 import App from './App';
 
 import 'flag-icons/css/flag-icons.min.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>

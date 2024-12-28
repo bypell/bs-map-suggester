@@ -36,7 +36,7 @@ export default function PlayerSelectPage() {
                     <PlayerIdInput onValidPlayerEntered={(id) => setPlayerId(id)} disabled={loading} />
                     <LoaderButton text="Get Suggestions" onClick={handleClick} disabled={loading} />
                 </div>
-                <div className={`flex flex-row mt-10`}>
+                <div className={"flex flex-row mt-10"}>
                     {loading && <Spinner />}
                     {error && <div className="text-red-500 mt-4">Error: {error.message}</div>}
                 </div>
