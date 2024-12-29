@@ -48,78 +48,29 @@ export async function getMapSuggestionsForUser(playerId) {
         playersToTopScores[playerIds[i]] = topScoresOfPlayers[i];
 
         playersToTopScores[playerIds[i]].forEach(score => {
-            score.playerDistanceToUser = playerIds.length - i;
+            score.playerDistanceToUser = i + 1;
         });
     }
     // console.log("playersToTopScores ", playersToTopScores);
 
-    // give each score a number for the number of maps the player has in common with the user
-    let maxNbCommonMaps = 0;
-    for (const playerId in playersToTopScores) {
-        const nbCommonMaps = playersToTopScores[playerId].filter(score => topScoresOfUser.some(playerTopScore => playerTopScore.leaderboard.id === score.leaderboard.id)).length;
-        if (nbCommonMaps > maxNbCommonMaps) {
-            maxNbCommonMaps = nbCommonMaps;
-        }
+    addSimilarityRatingToPlayersTopScoresDictionary(playersToTopScores, topScoresOfUser);
 
-        playersToTopScores[playerId].forEach(score => {
-            score.playerNbCommonMaps = nbCommonMaps;
-        });
-    }
-    // console.log("playersToTopScores ", playersToTopScores);
+    // flattens the values of the dictionary to get a nice array of all the top scores of the players above the user
+    const topScores = Object.values(playersToTopScores).flat();
 
-    // remove playerNbCommonMaps and replace it with a rating from 0 to 1
-    for (const playerId in playersToTopScores) {
-        playersToTopScores[playerId].forEach(score => {
-            score.playerSimilarityToUserRating = score.playerNbCommonMaps / maxNbCommonMaps;
-            if (!score.playerSimilarityToUserRating) {
-                score.playerSimilarityToUserRating = 0;
-            }
-            delete score.playerNbCommonMaps;
-        });
-    }
-    // console.log("playersToTopScores ", playersToTopScores);
+    addPopularityRatingToTopScores(topScores);
 
-    // flatten each array in the dictionary's values
-    const topScoresOfPlayersFlattened = Object.values(playersToTopScores).flat();
-    // console.log("topScoresOfPlayersFlattened ", topScoresOfPlayersFlattened);
-
-    // give each score leaderboard a counter for the number of times it appears, removing duplicates along the way
-    const topScoresDictionary = {};
-    let maxCount = 1;
-    for (let i = 0; i < topScoresOfPlayersFlattened.length; i++) {
-        const score = topScoresOfPlayersFlattened[i];
-        if (topScoresDictionary[score.leaderboard.id]) {
-            topScoresDictionary[score.leaderboard.id].count += 1;
-            if (topScoresDictionary[score.leaderboard.id].count > maxCount) {
-                maxCount = topScoresDictionary[score.leaderboard.id].count;
-            }
-        }
-        else {
-            topScoresDictionary[score.leaderboard.id] = { ...score, count: 1 };
-        }
-    }
-    const topScores = Object.values(topScoresDictionary);
-    // console.log("topScores ", topScores);
-
-    // replace count with rating
-    for (let i = 0; i < topScores.length; i++) {
-        topScores[i].mapPopularityRating = topScores[i].count / maxCount;
-        delete topScores[i].count;
-    }
-    // console.log("topScores ", topScores);
-
-    // replace playerDifferenceToUser with rating
     const maxPlayerDistanceToUser = topScores.map(score => score.playerDistanceToUser).reduce((a, b) => Math.max(a, b));
     for (let i = 0; i < topScores.length; i++) {
-        topScores[i].playerDistanceToUserRating = topScores[i].playerDistanceToUser / maxPlayerDistanceToUser;
+        topScores[i].playerDistanceToUserRating = 1.0 - (topScores[i].playerDistanceToUser / maxPlayerDistanceToUser);
         delete topScores[i].playerDistanceToUser;
     }
     // console.log("topScores ", topScores);
 
     // sort using ratings
-    const mapPopularityWeight = 0.3;
-    const playerDistanceWeight = 0.3;
-    const playerSimilarityWeight = 0.3;
+    const mapPopularityWeight = 1.0;
+    const playerDistanceWeight = 0.0;
+    const playerSimilarityWeight = 0.0;
 
     const topScoresSorted = topScores.sort((a, b) => {
         const aWeightedScore = (a.mapPopularityRating * mapPopularityWeight) +
@@ -134,10 +85,23 @@ export async function getMapSuggestionsForUser(playerId) {
     });
     // console.log("topScoresSorted ", topScoresSorted);
 
+
+    // remove duplicates that come after the first instance of a map (higher rating)
+    const topScoresSortedNoDuplicates = [];
+    const leaderboardIds = new Set();
+    for (let i = 0; i < topScoresSorted.length; i++) {
+        if (!leaderboardIds.has(topScoresSorted[i].leaderboard.id)) {
+            topScoresSortedNoDuplicates.push(topScoresSorted[i]);
+            leaderboardIds.add(topScoresSorted[i].leaderboard.id);
+        }
+    }
+    // console.log("topScoresSortedNoDuplicates ", topScoresSortedNoDuplicates);
+
+
     // cap star rating
     const userMaxStarRatingInTopPlays = topScoresOfUser.map(score => score.leaderboard.stars).reduce((a, b) => Math.max(a, b));
     const maxStarRating = userMaxStarRatingInTopPlays * 1.05;
-    const topScoresSortedCapped = topScoresSorted.filter(score => score.leaderboard.stars <= maxStarRating);
+    const topScoresSortedCapped = topScoresSortedNoDuplicates.filter(score => score.leaderboard.stars <= maxStarRating);
     // console.log("topScoresSortedCapped ", topScoresSortedCapped);
 
     // remove maps that the user already has a decent score on or played recently
@@ -169,4 +133,59 @@ export async function getMapSuggestionsForUser(playerId) {
 
     return suggestions;
 
+}
+
+
+function addSimilarityRatingToPlayersTopScoresDictionary(playersToTopScores, topScoresOfUser) {
+    // give each score a number for the number of maps the player has in common with the user
+    let maxNbCommonMapsWithUser = 0;
+    for (const playerId in playersToTopScores) {
+        const nbCommonMaps = playersToTopScores[playerId].filter(score => topScoresOfUser.some(playerTopScore => playerTopScore.leaderboard.id === score.leaderboard.id)).length;
+        if (nbCommonMaps > maxNbCommonMapsWithUser) {
+            maxNbCommonMapsWithUser = nbCommonMaps;
+        }
+
+        playersToTopScores[playerId].forEach(score => {
+            score.playerNbCommonMapsWithUser = nbCommonMaps;
+        });
+    }
+
+    // remove playerNbCommonMapsWithUser and replace it with a rating from 0 to 1
+    for (const playerId in playersToTopScores) {
+        playersToTopScores[playerId].forEach(score => {
+            score.playerSimilarityToUserRating = score.playerNbCommonMapsWithUser / maxNbCommonMapsWithUser;
+            if (!score.playerSimilarityToUserRating) {
+                score.playerSimilarityToUserRating = 0;
+            }
+            delete score.playerNbCommonMapsWithUser;
+        });
+    }
+}
+
+function addPopularityRatingToTopScores(topScores) {
+    // give each score leaderboard a counter for the number of times it appears
+    const topScoresDictionary = {};
+    let maxCount = 1;
+    for (let i = 0; i < topScores.length; i++) {
+        const score = topScores[i];
+        if (topScoresDictionary[score.leaderboard.id]) {
+            topScoresDictionary[score.leaderboard.id].count += 1;
+            if (topScoresDictionary[score.leaderboard.id].count > maxCount) {
+                maxCount = topScoresDictionary[score.leaderboard.id].count;
+            }
+        }
+        else {
+            topScoresDictionary[score.leaderboard.id] = { ...score, count: 1 };
+        }
+    }
+    for (let i = 0; i < topScores.length; i++) {
+        const score = topScores[i];
+        score.count = topScoresDictionary[score.leaderboard.id].count;
+    }
+
+    // replace count with rating
+    for (let i = 0; i < topScores.length; i++) {
+        topScores[i].mapPopularityRating = topScores[i].count / maxCount;
+        delete topScores[i].count;
+    }
 }

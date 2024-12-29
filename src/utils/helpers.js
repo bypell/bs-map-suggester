@@ -15,17 +15,17 @@ export function countDaysBetweenStringAndString(dateString, dateString2) {
 export function getDifficultyStyle(difficulty) {
     switch (difficulty) {
         case 1:
-            return 'easy';
+            return 'text-difficulty-easy';
         case 3:
-            return 'normal';
+            return 'text-difficulty-normal';
         case 5:
-            return 'hard';
+            return 'text-difficulty-hard';
         case 7:
-            return 'expert';
+            return 'text-difficulty-expert';
         case 9:
-            return 'expert-plus';
+            return 'text-difficulty-expert-plus';
         default:
-            return 'normal';
+            return 'text-difficulty-normal';
     }
 }
 

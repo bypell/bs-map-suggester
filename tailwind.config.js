@@ -7,6 +7,11 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  safelist: [
+    {
+      pattern: /text-difficulty-(easy|normal|hard|insane|expert|expert-plus)/,
+    },
+  ],
   theme: {
     extend: {
       colors: {
@@ -15,7 +20,7 @@ export default {
         "less-dark": "#313131",
         "even-less-dark": "#3C3C3C",
         "even-even-less-dark": "#4C4C4C",
-        "difficulty-easy": "#MediumSeaGreen",
+        "difficulty-easy": "#3CB371",
         "difficulty-normal": "#59b0f4",
         "difficulty-hard": "#FF6347",
         "difficulty-insane": "#f6a",
@@ -27,11 +32,6 @@ export default {
         mono: ["Roboto Mono", ...defaultTheme.fontFamily.mono],
       },
     },
-    safelist: [
-      {
-        pattern: /difficulty-(easy|normal|hard|insane|expert|expert-plus)/,
-      },
-    ],
   },
   plugins: [],
 }
