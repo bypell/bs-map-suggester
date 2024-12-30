@@ -8,5 +8,6 @@ export async function getMapsFromSongHashes(hashArray) {
         if (error?.response?.status === 404) {
             return [];
         }
+        throw error;
     }
 }

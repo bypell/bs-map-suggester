@@ -9,12 +9,17 @@ export async function getSongHashesToMapDataDictionary(hashArray) {
 
     let songHashToMapDataDictionary = {};
     await Promise.all(
-        batches.map(async (batch) => {
-            const data = await beatsaverAPI.getMapsFromSongHashes(batch);
-            songHashToMapDataDictionary = { ...songHashToMapDataDictionary, ...data };
+        batches.map(async (batch, index) => {
+            try {
+                const data = await beatsaverAPI.getMapsFromSongHashes(batch);
+                songHashToMapDataDictionary = { ...songHashToMapDataDictionary, ...data };
+            }
+            catch (error) {
+                // console.error(`Error fetching batch ${index} of song hashes: ${batch}`);
+                return
+            }
         })
     );
 
-    console.log("songHashToMapDataDictionary ", songHashToMapDataDictionary);
     return songHashToMapDataDictionary;
 }
