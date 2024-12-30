@@ -64,7 +64,7 @@ function PlayerIdInput({ onValidPlayerEntered, disabled }) {
                     hover:shadow-lg hover:duration-100
                     ${disabled && 'opacity-50 cursor-default'}
                     `}
-                    placeholder="Search yourself"
+                    placeholder="Search your username"
                 />
                 {isLoading && isFocused && (
                     <div className="absolute inset-y-0 right-0 mr-1 flex items-center pr-7 pointer-events-none">

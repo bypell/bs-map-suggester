@@ -25,7 +25,8 @@ export default function MapSuggestionsPage() {
                     {suggestions.map((suggestion, index) => {
                         const { leaderboard } = suggestion;
                         const { coverImage, songName, songAuthorName, difficulty, stars } = leaderboard;
-                        const songUrl = mapsData[leaderboard.songHash.toLowerCase()]?.versions[0].previewURL;
+                        const songHash = leaderboard.songHash.toLowerCase();
+                        const songUrl = mapsData[songHash]?.versions[0].previewURL;
                         return (
                             <div className='bg-less-dark pr-2 mb-2 shadow-md w-[40rem]' key={index}>
                                 <div className='flex flex-row items-center'>
@@ -39,10 +40,15 @@ export default function MapSuggestionsPage() {
                                         <h3 className="text-base">{songName}</h3>
                                         <p className='text-sm'>{songAuthorName}</p>
                                     </div>
-                                    <div className='flex flex-row ml-auto items-center'>
+                                    <div className='flex flex-col ml-auto items-end'>
                                         <div className='flex flex-row items-center cursor-help' title={`${getDifficultyLabel(difficulty.difficulty)} difficulty`}>
                                             <i className={`fas fa-star ${getDifficultyStyle(difficulty.difficulty)}`}></i>
                                             <p>{stars}</p>
+                                        </div>
+                                        <div className='flex flex-row items-end mt-1'>
+                                            <a href={`web+bsmap://${songHash}`} title="OneClick install">
+                                                <i class="fa-solid fa-cloud-arrow-down text-gray-400" />
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
