@@ -1,15 +1,15 @@
-import * as playersApi from '../api/players';
+import * as scoresaberAPI from '../api/scoresaber';
 
 export async function getMapSuggestionsForUser(playerId) {
-    const userBasicData = await playersApi.getPlayerBasic(playerId);
+    const userBasicData = await scoresaberAPI.getPlayerBasic(playerId);
 
     // take top 20 plays of user
-    const topScoresOfUser = await playersApi.getPlayerTopPlays(playerId, 20);
+    const topScoresOfUser = await scoresaberAPI.getPlayerTopPlays(playerId, 20);
     if (!topScoresOfUser) {
         return [];
     }
 
-    // get 50 players above user on global leaderboard
+    // get 100 players above user on global leaderboard
     const playersToGet = 100;
     const userRank = userBasicData.rank;
     const playersPerPage = 50; // TODO: unlikely to change in the future so I'm hardcoding this for now. WE LOVE MAGIC NUMBERS!
@@ -22,7 +22,7 @@ export async function getMapSuggestionsForUser(playerId) {
     let passedPlayerInLoop = false;
     pagesLoop:
     for (let i = startPage; i > 0; i--) {
-        const players = await playersApi.getPlayersOnPage(i);
+        const players = await scoresaberAPI.getPlayersOnPage(i);
         for (let j = players.length - 1; j >= 0; j--) {
             if (!passedPlayerInLoop && players[j].rank >= userRank) {
                 continue;
@@ -40,11 +40,14 @@ export async function getMapSuggestionsForUser(playerId) {
 
     // get top 20 plays of each player above user on global leaderboard
     let topScoresOfPlayers = await Promise.all(
-        playerIds.map(playerId => playersApi.getPlayerTopPlays(playerId, 20))
+        playerIds.map(playerId => scoresaberAPI.getPlayerTopPlays(playerId, 20))
     );
 
     const playersToTopScores = {};
     for (let i = 0; i < playerIds.length; i++) {
+        if (!topScoresOfPlayers[i]) {
+            continue;
+        }
         playersToTopScores[playerIds[i]] = topScoresOfPlayers[i];
 
         playersToTopScores[playerIds[i]].forEach(score => {
@@ -55,7 +58,6 @@ export async function getMapSuggestionsForUser(playerId) {
 
     addSimilarityRatingToPlayersTopScoresDictionary(playersToTopScores, topScoresOfUser);
 
-    // flattens the values of the dictionary to get a nice array of all the top scores of the players above the user
     const topScores = Object.values(playersToTopScores).flat();
 
     addPopularityRatingToTopScores(topScores);
@@ -68,9 +70,9 @@ export async function getMapSuggestionsForUser(playerId) {
     // console.log("topScores ", topScores);
 
     // sort using ratings
-    const mapPopularityWeight = 1.0;
-    const playerDistanceWeight = 0.0;
-    const playerSimilarityWeight = 0.0;
+    const mapPopularityWeight = 0.1;
+    const playerDistanceWeight = 0.4;
+    const playerSimilarityWeight = 0.5;
 
     const topScoresSorted = topScores.sort((a, b) => {
         const aWeightedScore = (a.mapPopularityRating * mapPopularityWeight) +
@@ -106,8 +108,8 @@ export async function getMapSuggestionsForUser(playerId) {
 
     // remove maps that the user already has a decent score on or played recently
     const [userTopScoresLonger, userRecentScores] = await Promise.all([
-        playersApi.getPlayerTopPlays(playerId, 50),
-        playersApi.getPlayerRecentPlays(playerId, 50)
+        scoresaberAPI.getPlayerTopPlays(playerId, 50),
+        scoresaberAPI.getPlayerRecentPlays(playerId, 50)
     ]);
 
     const mapsUserHasPlayed = new Set([
@@ -131,7 +133,7 @@ export async function getMapSuggestionsForUser(playerId) {
         suggestions.push(suggestion);
     }
 
-    return suggestions;
+    return suggestions.slice(0, 100);
 
 }
 

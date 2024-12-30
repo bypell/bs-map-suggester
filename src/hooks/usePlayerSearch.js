@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getPlayers } from '../api/players';
+import { getPlayers } from '../api/scoresaber';
 
 export default function usePlayerSearch(inputValue) {
     const [playerSearchResults, setPlayerSearchResults] = useState([]);
