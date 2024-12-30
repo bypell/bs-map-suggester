@@ -48,7 +48,7 @@ function SongPlayingOverlay({ songUrl, currentlyPlaying, setCurrentlyPlaying, id
                 }`}
         >
             <audio ref={audioRef} src={songUrl} />
-            <i className={`fas fa-${isPlaying ? 'pause' : 'play'} text-4xl text-white`}></i>
+            <i className={`fas fa-${isPlaying ? 'pause' : 'play'} text-2xl text-white`}></i>
         </div>
     );
 };
