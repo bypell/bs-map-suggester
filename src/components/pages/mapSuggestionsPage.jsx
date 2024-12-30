@@ -1,17 +1,19 @@
 import { useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { getDifficultyStyle, getDifficultyLabel } from '../../utils/helpers';
 import * as mapsDataService from '../../services/mapDataService';
+import SongPlayingOverlay from '../common/SongPlayingOverlay';
 
 export default function MapSuggestionsPage() {
     const location = useLocation();
     const { suggestions = [] } = location.state || {};
-    let mapsData = {};
+    const [mapsData, setMapsData] = useState({});
+    const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
 
     useEffect(() => {
         const songHashes = suggestions.map(suggestion => suggestion.leaderboard.songHash);
         mapsDataService.getSongHashesToMapDataDictionary(songHashes).then((data) => {
-            mapsData = data;
+            setMapsData(data);
         });
     }, []);
 
@@ -23,17 +25,25 @@ export default function MapSuggestionsPage() {
                     {suggestions.map((suggestion, index) => {
                         const { leaderboard } = suggestion;
                         const { coverImage, songName, songAuthorName, difficulty, stars } = leaderboard;
+                        const songUrl = mapsData[leaderboard.songHash.toLowerCase()]?.versions[0].previewURL;
                         return (
                             <div className='bg-less-dark pr-2 mb-2 shadow-md w-[40rem]' key={index}>
                                 <div className='flex flex-row items-center'>
-                                    <img src={coverImage} alt="song cover image" className="w-20 h-20" />
+                                    <div className='relative w-20 h-20'>
+                                        <SongPlayingOverlay songUrl={songUrl} currentlyPlaying={currentlyPlaying}
+                                            setCurrentlyPlaying={setCurrentlyPlaying}
+                                            id={index} />
+                                        <img src={coverImage} alt="song cover image" />
+                                    </div>
                                     <div className='flex flex-col ml-4'>
                                         <h3 className="text-base">{songName}</h3>
                                         <p className='text-sm'>{songAuthorName}</p>
                                     </div>
-                                    <div className='flex flex-row ml-auto items-center cursor-help' title={`${getDifficultyLabel(difficulty.difficulty)} difficulty`}>
-                                        <i className={`fas fa-star ${getDifficultyStyle(difficulty.difficulty)}`}></i>
-                                        <p>{stars}</p>
+                                    <div className='flex flex-row ml-auto items-center'>
+                                        <div className='flex flex-row items-center cursor-help' title={`${getDifficultyLabel(difficulty.difficulty)} difficulty`}>
+                                            <i className={`fas fa-star ${getDifficultyStyle(difficulty.difficulty)}`}></i>
+                                            <p>{stars}</p>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

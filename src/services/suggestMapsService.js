@@ -133,7 +133,9 @@ export async function getMapSuggestionsForUser(playerId) {
         suggestions.push(suggestion);
     }
 
-    return suggestions.slice(0, 100);
+
+    console.log("suggestions ", suggestions);
+    return suggestions.slice(0, 200);
 
 }
 
