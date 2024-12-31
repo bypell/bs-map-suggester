@@ -1,5 +1,6 @@
 import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import scoresaberIcon from '../../assets/scoresaber.svg';
 import { getDifficultyStyle, getDifficultyLabel } from '../../utils/helpers';
 import * as mapsDataService from '../../services/mapDataService';
 import SongPlayingOverlay from '../common/SongPlayingOverlay';
@@ -27,6 +28,7 @@ export default function MapSuggestionsPage() {
                         const { coverImage, songName, songAuthorName, difficulty, stars } = leaderboard;
                         const songHash = leaderboard.songHash.toLowerCase();
                         const songUrl = mapsData[songHash]?.versions[0].previewURL;
+                        const beatSaverId = mapsData[songHash]?.id;
                         return (
                             <div className='bg-less-dark pr-2 mb-2 shadow-md w-[40rem]' key={index}>
                                 <div className='flex flex-row items-center'>
@@ -45,9 +47,15 @@ export default function MapSuggestionsPage() {
                                             <i className={`fas fa-star ${getDifficultyStyle(difficulty.difficulty)}`}></i>
                                             <p>{stars}</p>
                                         </div>
-                                        <div className='flex flex-row items-end mt-1'>
-                                            <a href={`web+bsmap://${songHash}`} title="OneClick install">
-                                                <i class="fa-solid fa-cloud-arrow-down text-gray-400" />
+                                        <div className='flex flex-row mt-1 space-x-1 content-center'>
+                                            <a title='ScoreSaber link' className='content-center' href={`https://scoresaber.com/leaderboard/${leaderboard.id}`} target='_blank' rel='noreferrer'>
+                                                <img src={scoresaberIcon} className='w-auto h-[18px]' alt="scoresaber icon" />
+                                            </a>
+                                            <a title='BeatSaver link' className='flex items-center justify-center' href={`https://beatsaver.com/maps/${beatSaverId}`} target='_blank' rel='noreferrer'>
+                                                <i class="fa-solid fa-arrow-up-right-from-square text-gray-400 hover:text-gray-500" />
+                                            </a>
+                                            <a title="OneClick install" className='flex items-center justify-center' href={`web+bsmap://${songHash}`}>
+                                                <i class="fa-solid fa-cloud-arrow-down text-gray-400 hover:text-gray-500" />
                                             </a>
                                         </div>
                                     </div>

@@ -87,7 +87,6 @@ export async function getMapSuggestionsForUser(playerId) {
     });
     // console.log("topScoresSorted ", topScoresSorted);
 
-
     // remove duplicates that come after the first instance of a map (higher rating)
     const topScoresSortedNoDuplicates = [];
     const leaderboardIds = new Set();
@@ -98,7 +97,6 @@ export async function getMapSuggestionsForUser(playerId) {
         }
     }
     // console.log("topScoresSortedNoDuplicates ", topScoresSortedNoDuplicates);
-
 
     // cap star rating
     const userMaxStarRatingInTopPlays = topScoresOfUser.map(score => score.leaderboard.stars).reduce((a, b) => Math.max(a, b));
@@ -140,23 +138,23 @@ export async function getMapSuggestionsForUser(playerId) {
 }
 
 
-function addSimilarityRatingToPlayersTopScoresDictionary(playersToTopScores, topScoresOfUser) {
+function addSimilarityRatingToPlayersTopScoresDictionary(playersToTopScoresDict, topScoresOfUser) {
     // give each score a number for the number of maps the player has in common with the user
     let maxNbCommonMapsWithUser = 0;
-    for (const playerId in playersToTopScores) {
-        const nbCommonMaps = playersToTopScores[playerId].filter(score => topScoresOfUser.some(playerTopScore => playerTopScore.leaderboard.id === score.leaderboard.id)).length;
+    for (const playerId in playersToTopScoresDict) {
+        const nbCommonMaps = playersToTopScoresDict[playerId].filter(score => topScoresOfUser.some(playerTopScore => playerTopScore.leaderboard.id === score.leaderboard.id)).length;
         if (nbCommonMaps > maxNbCommonMapsWithUser) {
             maxNbCommonMapsWithUser = nbCommonMaps;
         }
 
-        playersToTopScores[playerId].forEach(score => {
+        playersToTopScoresDict[playerId].forEach(score => {
             score.playerNbCommonMapsWithUser = nbCommonMaps;
         });
     }
 
     // remove playerNbCommonMapsWithUser and replace it with a rating from 0 to 1
-    for (const playerId in playersToTopScores) {
-        playersToTopScores[playerId].forEach(score => {
+    for (const playerId in playersToTopScoresDict) {
+        playersToTopScoresDict[playerId].forEach(score => {
             score.playerSimilarityToUserRating = score.playerNbCommonMapsWithUser / maxNbCommonMapsWithUser;
             if (!score.playerSimilarityToUserRating) {
                 score.playerSimilarityToUserRating = 0;

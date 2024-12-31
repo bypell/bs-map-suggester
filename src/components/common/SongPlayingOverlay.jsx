@@ -7,6 +7,7 @@ function SongPlayingOverlay({ songUrl, currentlyPlaying, setCurrentlyPlaying, id
 
     useEffect(() => {
         const audioElement = audioRef.current;
+        audioElement.volume = 0.2;
 
         const handleEnded = () => {
             setIsPlaying(false);

@@ -21,5 +21,7 @@ export async function getSongHashesToMapDataDictionary(hashArray) {
         })
     );
 
+    console.log("songHashToMapDataDictionary ", songHashToMapDataDictionary);
+
     return songHashToMapDataDictionary;
 }
