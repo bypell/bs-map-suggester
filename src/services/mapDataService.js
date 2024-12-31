@@ -8,20 +8,29 @@ export async function getSongHashesToMapDataDictionary(hashArray) {
     }
 
     let songHashToMapDataDictionary = {};
-    await Promise.all(
-        batches.map(async (batch, index) => {
+
+    // fetching each batch of 50 song hashes
+    // if there's a rate limit error, we retry after 5 seconds
+    for (let index = 0; index < batches.length; index++) {
+        let batch = batches[index];
+        let success = false;
+
+        while (!success) {
             try {
                 const data = await beatsaverAPI.getMapsFromSongHashes(batch);
                 songHashToMapDataDictionary = { ...songHashToMapDataDictionary, ...data };
+                success = true;
+            } catch (error) {
+                if (error.status === 429) {
+                    console.warn(`Beatsaver rate limit reached. Retrying batch ${index + 1} after 5 seconds...`);
+                    await new Promise(resolve => setTimeout(resolve, 5000));
+                } else {
+                    console.error(`Error processing batch ${index + 1}:`, error);
+                    throw error;
+                }
             }
-            catch (error) {
-                // console.error(`Error fetching batch ${index} of song hashes: ${batch}`);
-                return
-            }
-        })
-    );
-
-    console.log("songHashToMapDataDictionary ", songHashToMapDataDictionary);
+        }
+    }
 
     return songHashToMapDataDictionary;
 }

@@ -49,13 +49,13 @@ export default function MapSuggestionsPage() {
                                         </div>
                                         <div className='flex flex-row mt-1 space-x-1 content-center'>
                                             <a title='ScoreSaber link' className='content-center' href={`https://scoresaber.com/leaderboard/${leaderboard.id}`} target='_blank' rel='noreferrer'>
-                                                <img src={scoresaberIcon} className='w-auto h-[18px]' alt="scoresaber icon" />
+                                                <img src={scoresaberIcon} className='min-w-[18px] min-h-[18px]' alt="scoresaber icon" />
                                             </a>
                                             <a title='BeatSaver link' className='flex items-center justify-center' href={`https://beatsaver.com/maps/${beatSaverId}`} target='_blank' rel='noreferrer'>
-                                                <i class="fa-solid fa-arrow-up-right-from-square text-gray-400 hover:text-gray-500" />
+                                                <i className="fa-solid fa-arrow-up-right-from-square text-gray-400 hover:text-gray-500" />
                                             </a>
                                             <a title="OneClick install" className='flex items-center justify-center' href={`web+bsmap://${songHash}`}>
-                                                <i class="fa-solid fa-cloud-arrow-down text-gray-400 hover:text-gray-500" />
+                                                <i className="fa-solid fa-cloud-arrow-down text-gray-400 hover:text-gray-500" />
                                             </a>
                                         </div>
                                     </div>

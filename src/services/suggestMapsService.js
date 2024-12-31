@@ -43,6 +43,8 @@ export async function getMapSuggestionsForUser(playerId) {
         playerIds.map(playerId => scoresaberAPI.getPlayerTopPlays(playerId, 20))
     );
 
+    console.log("fetched main data");
+
     const playersToTopScores = {};
     for (let i = 0; i < playerIds.length; i++) {
         if (!topScoresOfPlayers[i]) {
@@ -101,6 +103,7 @@ export async function getMapSuggestionsForUser(playerId) {
     // cap star rating
     const userMaxStarRatingInTopPlays = topScoresOfUser.map(score => score.leaderboard.stars).reduce((a, b) => Math.max(a, b));
     const maxStarRating = userMaxStarRatingInTopPlays * 1.05;
+    console.log("maxStarRating ", maxStarRating);
     const topScoresSortedCapped = topScoresSortedNoDuplicates.filter(score => score.leaderboard.stars <= maxStarRating);
     // console.log("topScoresSortedCapped ", topScoresSortedCapped);
 
@@ -133,7 +136,7 @@ export async function getMapSuggestionsForUser(playerId) {
 
 
     console.log("suggestions ", suggestions);
-    return suggestions.slice(0, 100);
+    return suggestions.slice(0, 200);
 
 }
 
@@ -159,7 +162,7 @@ function addSimilarityRatingToPlayersTopScoresDictionary(playersToTopScoresDict,
             if (!score.playerSimilarityToUserRating) {
                 score.playerSimilarityToUserRating = 0;
             }
-            delete score.playerNbCommonMapsWithUser;
+            // delete score.playerNbCommonMapsWithUser;
         });
     }
 }

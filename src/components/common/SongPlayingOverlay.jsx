@@ -7,7 +7,8 @@ function SongPlayingOverlay({ songUrl, currentlyPlaying, setCurrentlyPlaying, id
 
     useEffect(() => {
         const audioElement = audioRef.current;
-        audioElement.volume = 0.2;
+
+        if (!audioElement) return;
 
         const handleEnded = () => {
             setIsPlaying(false);
@@ -19,7 +20,7 @@ function SongPlayingOverlay({ songUrl, currentlyPlaying, setCurrentlyPlaying, id
         return () => {
             audioElement.removeEventListener('ended', handleEnded);
         };
-    }, [setCurrentlyPlaying]);
+    }, [setCurrentlyPlaying, songUrl]);
 
     useEffect(() => {
         if (currentlyPlaying !== id && isPlaying) {
@@ -29,18 +30,23 @@ function SongPlayingOverlay({ songUrl, currentlyPlaying, setCurrentlyPlaying, id
     }, [currentlyPlaying, id, isPlaying]);
 
     const togglePlayPause = () => {
+        const audio = audioRef.current;
         if (isPlaying) {
-            audioRef.current.pause();
+            audio.pause();
         } else {
-            // audioRef.current.load();
+            if (!audio) return;
+
             if (currentlyPlaying !== id) {
-                audioRef.current.load();
+                audio.load();
             }
-            audioRef.current.play();
+            audio.volume = 0.2;
+            audio.play();
             setCurrentlyPlaying(id);
         }
         setIsPlaying(!isPlaying);
     };
+
+    if (!songUrl) return null;
 
     return (
         <div
