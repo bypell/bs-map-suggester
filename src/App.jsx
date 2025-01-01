@@ -3,16 +3,14 @@ import PlayerSelectPage from './components/pages/PlayerSelectPage';
 import ErrorPage from './components/pages/errorPage';
 import MapSuggestionsPage from './components/pages/mapSuggestionsPage';
 
-const basename = '/bs-map-suggester/';
-
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/bs-map-suggester/',
     element: <PlayerSelectPage />,
     errorElement: <ErrorPage />
   },
   {
-    path: '/suggestions/',
+    path: '/bs-map-suggester/suggestions/',
     element: <MapSuggestionsPage />,
   },
   { basename }
