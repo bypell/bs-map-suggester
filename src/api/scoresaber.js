@@ -1,6 +1,8 @@
+const BASE_URL = 'https://scoresaber.balibalo.xyz/scoresaber-api';
+
 export async function getPlayers(query) {
     try {
-        const response = await fetch(`/api/players?search=${query}`);
+        const response = await fetch(`${BASE_URL}/players?search=${query}`);
         if (!response.ok) {
             if (response.status === 404) {
                 return [];
@@ -17,7 +19,7 @@ export async function getPlayers(query) {
 
 export async function getPlayerTopPlays(playerId, howMany) {
     try {
-        const response = await fetch(`/api/player/${playerId}/scores?limit=${howMany}&sort=top`);
+        const response = await fetch(`${BASE_URL}/player/${playerId}/scores?limit=${howMany}&sort=top`);
         if (!response.ok) {
             if (response.status === 404) {
                 return [];
@@ -34,7 +36,7 @@ export async function getPlayerTopPlays(playerId, howMany) {
 
 export async function getPlayerRecentPlays(playerId, howMany) {
     try {
-        const response = await fetch(`/api/player/${playerId}/scores?limit=${howMany}&sort=recent`);
+        const response = await fetch(`${BASE_URL}/player/${playerId}/scores?limit=${howMany}&sort=recent`);
         if (!response.ok) {
             if (response.status === 404) {
                 return [];
@@ -51,7 +53,7 @@ export async function getPlayerRecentPlays(playerId, howMany) {
 
 export async function getPlayersOnPage(page) {
     try {
-        const response = await fetch(`/api/players?page=${page}&withMetadata=false`);
+        const response = await fetch(`${BASE_URL}/players?page=${page}&withMetadata=false`);
         if (!response.ok) {
             if (response.status === 404) {
                 return [];
@@ -68,7 +70,7 @@ export async function getPlayersOnPage(page) {
 
 export async function getPlayerBasic(playerId) {
     try {
-        const response = await fetch(`/api/player/${playerId}/basic`);
+        const response = await fetch(`${BASE_URL}/player/${playerId}/basic`);
         if (!response.ok) {
             if (response.status === 404) {
                 return null;
@@ -85,7 +87,7 @@ export async function getPlayerBasic(playerId) {
 
 export async function getLeaderboardPageScores(leaderboardId, page) {
     try {
-        const response = await fetch(`/api/leaderboard/by-id/${leaderboardId}/scores?page=${page}`);
+        const response = await fetch(`${BASE_URL}/leaderboard/by-id/${leaderboardId}/scores?page=${page}`);
         if (!response.ok) {
             throw new Error(`Error: ${response.status}`);
         }
@@ -99,7 +101,7 @@ export async function getLeaderboardPageScores(leaderboardId, page) {
 
 export async function getLeaderboardFull(leaderboardId) {
     try {
-        const response = await fetch(`/api/leaderboard/by-id/${leaderboardId}/info`);
+        const response = await fetch(`${BASE_URL}/leaderboard/by-id/${leaderboardId}/info`);
         if (!response.ok) {
             throw new Error(`Error: ${response.status}`);
         }
