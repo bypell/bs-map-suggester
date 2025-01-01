@@ -51,3 +51,65 @@ export async function getPlayerRecentPlays(playerId, howMany) {
         return [];
     }
 }
+
+export async function getPlayersOnPage(page) {
+    try {
+        const response = await fetch(`${CORS_PROXY}${BASE_URL}/players?page=${page}&withMetadata=false`);
+        if (!response.ok) {
+            if (response.status === 404) {
+                return [];
+            }
+            throw new Error(`Error: ${response.status}`);
+        }
+        const data = await response.json();
+        return data.players;
+    } catch (error) {
+        console.error(error);
+        return [];
+    }
+}
+
+export async function getPlayerBasic(playerId) {
+    try {
+        const response = await fetch(`${CORS_PROXY}${BASE_URL}/player/${playerId}/basic`);
+        if (!response.ok) {
+            if (response.status === 404) {
+                return null;
+            }
+            throw new Error(`Error: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+export async function getLeaderboardPageScores(leaderboardId, page) {
+    try {
+        const response = await fetch(`${CORS_PROXY}${BASE_URL}/leaderboard/by-id/${leaderboardId}/scores?page=${page}`);
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
+
+export async function getLeaderboardFull(leaderboardId) {
+    try {
+        const response = await fetch(`${CORS_PROXY}${BASE_URL}/leaderboard/by-id/${leaderboardId}/info`);
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error(error);
+        return null;
+    }
+}
