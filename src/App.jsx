@@ -12,8 +12,7 @@ const router = createBrowserRouter([
   {
     path: '/bs-map-suggester/suggestions/',
     element: <MapSuggestionsPage />,
-  },
-  { basename }
+  }
 ]);
 
 export default function App() {
