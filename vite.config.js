@@ -8,7 +8,6 @@ export default defineConfig({
       '/api': 'https://scoresaber.com',
     },
   },
-  plugins: [
-    react(),
-  ],
+  plugins: [react(),],
+  base: '/bs-map-suggester/',
 })
