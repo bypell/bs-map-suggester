@@ -5,12 +5,12 @@ import MapSuggestionsPage from './components/pages/mapSuggestionsPage';
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: '/bs-map-suggester/',
     element: <PlayerSelectPage />,
     errorElement: <ErrorPage />
   },
   {
-    path: '/suggestions/:playerId',
+    path: '/bs-map-suggester/suggestions/',
     element: <MapSuggestionsPage />,
   }
 ]);

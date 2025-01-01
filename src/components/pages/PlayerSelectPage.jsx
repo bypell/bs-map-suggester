@@ -19,7 +19,7 @@ export default function PlayerSelectPage() {
                 await getMapSuggestionsForUser(playerId);
             setLoading(false);
             if (suggestions) {
-                navigate(`/suggestions/${playerId}`, { state: { suggestions } });
+                navigate(`/bs-map-suggester/suggestions`, { state: { suggestions } });
             } else {
                 console.error("No suggestions found.");
             }
