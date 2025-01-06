@@ -4,16 +4,15 @@ const { createProxyMiddleware } = require('http-proxy-middleware');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const allowedOrigin = 'https://bypell.github.io';
+app.use((req, res, next) => {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    next();
+});
 
 app.options('*', (req, res) => {
-    const origin = req.headers.origin;
-    if (origin && origin.startsWith(allowedOrigin)) {
-        res.setHeader('Access-Control-Allow-Origin', origin);
-        res.setHeader('Access-Control-Allow-Methods', 'GET');
-        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-    }
-    res.status(204).end();
+    res.status(200).end();
 });
 
 app.use('/scoresaber', createProxyMiddleware({
@@ -26,20 +25,18 @@ app.use('/scoresaber', createProxyMiddleware({
     headers: {
         'Accept': 'application/json'
     },
+    logLevel: 'debug',
     onError: (err, req, res) => {
         console.error('Proxy Error:', err);
-        res.status(500).send('Proxy Error');
+        res.status(500).json({ error: 'Proxy Error' });
     },
     onProxyReq: (proxyReq, req, res) => {
         console.log(`Proxying request to: ${proxyReq.path}`);
     },
     onProxyRes: (proxyRes, req, res) => {
-        const origin = req.headers.origin;
-        if (origin && origin.startsWith(allowedOrigin)) {
-            proxyRes.headers['Access-Control-Allow-Origin'] = origin;
-            proxyRes.headers['Access-Control-Allow-Methods'] = 'GET';
-            proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization';
-        }
+        proxyRes.headers['Access-Control-Allow-Origin'] = '*';
+        proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS';
+        proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization';
         console.log(`Response status: ${proxyRes.statusCode}`);
     }
 }));
