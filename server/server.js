@@ -5,6 +5,22 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const allowedOrigin = 'https://bypell.github.io/bs-map-suggester';
+
+const corsOptions = {
+    origin: function (origin, callback) {
+        if (!origin || origin === allowedOrigin) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    methods: ['GET'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
+
 app.get('/', (req, res) => {
     res.send('ScoreSaber API proxy server');
 });
