@@ -1,5 +1,5 @@
-const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
-const BASE_URL = 'https://scoresaber.com/api';
+const CORS_PROXY = '';
+const BASE_URL = '/api';
 
 export async function getPlayers(query) {
     try {
