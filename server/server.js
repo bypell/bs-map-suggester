@@ -5,6 +5,14 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+app.get('/', (req, res) => {
+    res.send('ScoreSaber API proxy server');
+});
+
+app.get('/test', (req, res) => {
+    res.send('Testing');
+});
+
 app.use('/scoresaber', createProxyMiddleware({
     target: 'https://scoresaber.com/api',
     changeOrigin: true,
