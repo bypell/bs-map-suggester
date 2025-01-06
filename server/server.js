@@ -6,15 +6,19 @@ const PORT = process.env.PORT || 3000;
 const ALLOWED_ORIGIN = 'https://bypell.github.io';
 
 const isAllowedOrigin = (origin) => {
-    return !origin || origin.startsWith(ALLOWED_ORIGIN);
+    return origin === ALLOWED_ORIGIN;
 };
 
 app.use((req, res, next) => {
     const origin = req.headers.origin;
+    console.log(`Request from origin: ${origin}`);
+
     if (!isAllowedOrigin(origin)) {
-        return res.status(403).json({ error: 'Origin not allowed' });
+        console.log(`Blocked request from unauthorized origin: ${origin}`);
+        return res.status(403).json({ error: 'Unauthorized origin' });
     }
-    res.header('Access-Control-Allow-Origin', origin || ALLOWED_ORIGIN);
+
+    res.header('Access-Control-Allow-Origin', ALLOWED_ORIGIN);
     res.header('Access-Control-Allow-Methods', 'GET, OPTIONS');
     res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
     next();
@@ -39,19 +43,9 @@ app.use('/scoresaber', createProxyMiddleware({
         'Accept': 'application/json'
     },
     logLevel: 'debug',
-    onError: (err, req, res) => {
-        console.error('Proxy Error:', err);
-        res.status(500).json({ error: 'Proxy Error' });
-    },
-    onProxyReq: (proxyReq, req, res) => {
-        console.log(`Proxying request to: ${proxyReq.path}`);
-    },
     onProxyRes: (proxyRes, req, res) => {
-        const origin = req.headers.origin;
-        proxyRes.headers['Access-Control-Allow-Origin'] = origin || ALLOWED_ORIGIN;
-        proxyRes.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS';
-        proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization';
-        console.log(`Response status: ${proxyRes.statusCode}`);
+        proxyRes.headers['Access-Control-Allow-Origin'] = ALLOWED_ORIGIN;
+        console.log(`Proxy response status: ${proxyRes.statusCode}`);
     }
 }));
 
