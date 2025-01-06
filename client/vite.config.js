@@ -6,7 +6,11 @@ export default defineConfig({
   server: {
     proxy: {
       // '/api': 'https://scoresaber.com',
-      '/api': 'http://localhost:3000/scoresaber',
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api/, '/scoresaber')
+      }
     },
   },
   plugins: [react(),],
