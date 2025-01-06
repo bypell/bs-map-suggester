@@ -15,7 +15,6 @@ app.options('*', (req, res) => {
     res.status(200).end();
 });
 
-// /
 app.get('/', (req, res) => {
     res.send('Server running teehee');
 });
