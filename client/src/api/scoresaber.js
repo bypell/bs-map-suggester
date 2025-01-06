@@ -1,9 +1,8 @@
-const CORS_PROXY = '';
-const BASE_URL = '/api';
+const URL = '/api';
 
 export async function getPlayers(query) {
     try {
-        const response = await fetch(`${CORS_PROXY}${BASE_URL}/players?search=${query}`);
+        const response = await fetch(`${URL}/players?search=${query}`);
         if (!response.ok) {
             if (response.status === 404) {
                 return [];
@@ -20,7 +19,7 @@ export async function getPlayers(query) {
 
 export async function getPlayerTopPlays(playerId, howMany) {
     try {
-        const response = await fetch(`${CORS_PROXY}${BASE_URL}/player/${playerId}/scores?limit=${howMany}&sort=top`);
+        const response = await fetch(`${URL}/player/${playerId}/scores?limit=${howMany}&sort=top`);
         if (!response.ok) {
             if (response.status === 404) {
                 return [];
@@ -37,7 +36,7 @@ export async function getPlayerTopPlays(playerId, howMany) {
 
 export async function getPlayerRecentPlays(playerId, howMany) {
     try {
-        const response = await fetch(`${CORS_PROXY}${BASE_URL}/player/${playerId}/scores?limit=${howMany}&sort=recent`);
+        const response = await fetch(`${URL}/player/${playerId}/scores?limit=${howMany}&sort=recent`);
         if (!response.ok) {
             if (response.status === 404) {
                 return [];
@@ -54,7 +53,7 @@ export async function getPlayerRecentPlays(playerId, howMany) {
 
 export async function getPlayersOnPage(page) {
     try {
-        const response = await fetch(`${CORS_PROXY}${BASE_URL}/players?page=${page}&withMetadata=false`);
+        const response = await fetch(`${URL}/players?page=${page}&withMetadata=false`);
         if (!response.ok) {
             if (response.status === 404) {
                 return [];
@@ -71,7 +70,7 @@ export async function getPlayersOnPage(page) {
 
 export async function getPlayerBasic(playerId) {
     try {
-        const response = await fetch(`${CORS_PROXY}${BASE_URL}/player/${playerId}/basic`);
+        const response = await fetch(`${URL}/player/${playerId}/basic`);
         if (!response.ok) {
             if (response.status === 404) {
                 return null;
@@ -88,7 +87,7 @@ export async function getPlayerBasic(playerId) {
 
 export async function getLeaderboardPageScores(leaderboardId, page) {
     try {
-        const response = await fetch(`${CORS_PROXY}${BASE_URL}/leaderboard/by-id/${leaderboardId}/scores?page=${page}`);
+        const response = await fetch(`${URL}/leaderboard/by-id/${leaderboardId}/scores?page=${page}`);
         if (!response.ok) {
             throw new Error(`Error: ${response.status}`);
         }
@@ -102,7 +101,7 @@ export async function getLeaderboardPageScores(leaderboardId, page) {
 
 export async function getLeaderboardFull(leaderboardId) {
     try {
-        const response = await fetch(`${CORS_PROXY}${BASE_URL}/leaderboard/by-id/${leaderboardId}/info`);
+        const response = await fetch(`${URL}/leaderboard/by-id/${leaderboardId}/info`);
         if (!response.ok) {
             throw new Error(`Error: ${response.status}`);
         }
