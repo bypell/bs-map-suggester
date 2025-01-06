@@ -44,7 +44,7 @@ app.use('/scoresaber', createProxyMiddleware({
         console.log(`Proxying request to: ${proxyReq.path}`);
     },
     onProxyRes: (proxyRes, req, res) => {
-        proxyRes.headers['Access-Control-Allow-Origin'] = req.headers.origin || '*';
+        proxyRes.headers['Access-Control-Allow-Origin'] = allowedOrigin;
         proxyRes.headers['Access-Control-Allow-Methods'] = 'GET';
         proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization';
         console.log(`Received response with status: ${proxyRes.statusCode}`);
