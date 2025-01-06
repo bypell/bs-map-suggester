@@ -1,4 +1,4 @@
-const URL = 'https://bypell-scoresaber-proxy.vercel.app/scoresaber';
+const URL = 'https://bs-proxy-bypells-projects.vercel.app/scoresaber';
 
 export async function getPlayers(query) {
     try {
