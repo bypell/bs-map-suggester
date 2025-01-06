@@ -15,6 +15,11 @@ app.options('*', (req, res) => {
     res.status(200).end();
 });
 
+// /
+app.get('/', (req, res) => {
+    res.send('Server running teehee');
+});
+
 app.use('/scoresaber', createProxyMiddleware({
     target: 'https://scoresaber.com/api',
     changeOrigin: true,
