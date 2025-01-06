@@ -1,8 +1,4 @@
-# React + Vite
+Finds maps to play to improve you global rank on the scoresaber leaderboard/mod in the game Beat Saber.
+Just enter your username, click on the suggestion and then the button and the tool will generate a list of maps that you could set a good score on.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Very WIP for now
