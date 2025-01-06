@@ -1,32 +1,19 @@
 const express = require('express');
 const { createProxyMiddleware } = require('http-proxy-middleware');
-const cors = require('cors');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const allowedOrigin = 'https://bypell.github.io/bs-map-suggester';
+const allowedOrigin = 'https://bypell.github.io';
 
-const corsOptions = {
-    origin: function (origin, callback) {
-        if (!origin || origin === allowedOrigin) {
-            callback(null, true);
-        } else {
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    methods: ['GET'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-};
-
-app.use(cors(corsOptions));
-
-app.get('/', (req, res) => {
-    res.send('ScoreSaber API proxy server');
-});
-
-app.get('/test', (req, res) => {
-    res.send('Testing');
+app.options('*', (req, res) => {
+    const origin = req.headers.origin;
+    if (origin && origin.startsWith(allowedOrigin)) {
+        res.setHeader('Access-Control-Allow-Origin', origin);
+        res.setHeader('Access-Control-Allow-Methods', 'GET');
+        res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    }
+    res.status(204).end();
 });
 
 app.use('/scoresaber', createProxyMiddleware({
@@ -39,18 +26,24 @@ app.use('/scoresaber', createProxyMiddleware({
     headers: {
         'Accept': 'application/json'
     },
-    logLevel: 'debug',
+    onError: (err, req, res) => {
+        console.error('Proxy Error:', err);
+        res.status(500).send('Proxy Error');
+    },
     onProxyReq: (proxyReq, req, res) => {
         console.log(`Proxying request to: ${proxyReq.path}`);
     },
     onProxyRes: (proxyRes, req, res) => {
-        proxyRes.headers['Access-Control-Allow-Origin'] = allowedOrigin;
-        proxyRes.headers['Access-Control-Allow-Methods'] = 'GET';
-        proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization';
-        console.log(`Received response with status: ${proxyRes.statusCode}`);
-    },
+        const origin = req.headers.origin;
+        if (origin && origin.startsWith(allowedOrigin)) {
+            proxyRes.headers['Access-Control-Allow-Origin'] = origin;
+            proxyRes.headers['Access-Control-Allow-Methods'] = 'GET';
+            proxyRes.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization';
+        }
+        console.log(`Response status: ${proxyRes.statusCode}`);
+    }
 }));
 
 app.listen(PORT, () => {
-    console.log(`Proxy server is running on port ${PORT}`);
+    console.log(`Server running on port ${PORT}`);
 });
