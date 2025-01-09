@@ -1,4 +1,4 @@
-const URL = 'https://bs-proxy-bypells-projects.vercel.app/scoresaber';
+const URL = import.meta.env.PROD ? 'https://bs-proxy-bypells-projects.vercel.app/scoresaber' : 'http://localhost:3000/scoresaber';
 
 export async function getPlayers(query) {
     try {

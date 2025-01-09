@@ -10,7 +10,7 @@ export default function PlayerSelectPage() {
     const [playerId, setPlayerId] = useState('');
     const navigate = useNavigate();
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [errorMessage, setErrorMessage] = useState(null);
 
     async function handleClick() {
         try {
@@ -27,18 +27,18 @@ export default function PlayerSelectPage() {
             console.error("Failed to fetch suggestions:", error);
         }
     }
-
+    console.log(playerId);
     return (
         <div className="checkerboard h-screen w-screen relative text-white bg-dark flex flex-col justify-center items-center overflow-hidden">
             <div className={`flex flex-col items-center`}>
                 <Header />
                 <div className="flex flex-row">
-                    <PlayerIdInput onValidPlayerEntered={(id) => setPlayerId(id)} disabled={loading} />
-                    <LoaderButton text="Get Suggestions" onClick={handleClick} disabled={loading} />
+                    <PlayerIdInput onValidPlayerEntered={(id) => setPlayerId(id)} onChange={() => setPlayerId(null)} disabled={loading} />
+                    <LoaderButton text="Get Suggestions" onClick={handleClick} disabled={loading || !playerId} />
                 </div>
                 <div className={"flex flex-row mt-10"}>
                     {loading && <Spinner />}
-                    {error && <div className="text-red-500 mt-4">Error: {error.message}</div>}
+                    {errorMessage && <div className="text-red-500 mt-4">Error: {errorMessage}</div>}
                 </div>
             </div>
         </div>

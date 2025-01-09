@@ -3,7 +3,7 @@ import usePlayerSearch from '../hooks/usePlayerSearch';
 import Spinner from './common/Spinner';
 import { truncateString } from '../utils/helpers';
 
-function PlayerIdInput({ onValidPlayerEntered, disabled }) {
+function PlayerIdInput({ onValidPlayerEntered, onChange, disabled }) {
     const [inputValue, setInputValue] = useState('');
     const [isFocused, setIsFocused] = useState(false);
     const { playerSearchResults, isLoading } = usePlayerSearch(inputValue);
@@ -13,6 +13,7 @@ function PlayerIdInput({ onValidPlayerEntered, disabled }) {
         if (!isFocused) return;
         const value = event.target.value;
         setInputValue(value);
+        if (onChange) onChange(value);
     };
 
     function handleBlur(event) {
@@ -54,16 +55,7 @@ function PlayerIdInput({ onValidPlayerEntered, disabled }) {
                     onChange={handleChange}
                     onFocus={() => setIsFocused(true)}
                     disabled={disabled}
-                    className={`
-                    h-12
-                    w-full
-                    px-5 py-2 text-lg z-10
-                    text-dark bg-white rounded-xl shadow-md outline-none
-                    transition-all duration-200
-                    focus:ring-2 focus:ring-main
-                    hover:shadow-lg hover:duration-100
-                    ${disabled && 'opacity-50 cursor-default'}
-                    `}
+                    className={`h-12 w-full px-5 py-2 text-lg z-10 text-dark bg-white rounded-xl shadow-md outline-none transition-all duration-200 focus:ring-2 focus:ring-main hover:shadow-lg hover:duration-100 ${disabled && 'opacity-50 cursor-default'}`}
                     placeholder="Search your username"
                 />
                 {isLoading && isFocused && (
