@@ -1,13 +1,15 @@
 import { useLocation } from 'react-router-dom';
 import { useEffect, useState, useMemo } from 'react';
+import { FixedSizeList as List } from 'react-window';
 import * as mapsDataService from '../../services/mapDataService';
 import SuggestionCard from '../SuggestionCard';
+import { useSuggestionAudioPlayer } from '../../hooks/useSuggestionAudioPlayer';
 
 export default function MapSuggestionsPage() {
     const location = useLocation();
     const { suggestions = [] } = location.state || {};
     const [mapsData, setMapsData] = useState({});
-    const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
+    const { play, pause, currentlyPlaying, isPlaying } = useSuggestionAudioPlayer();
 
     const songHashes = useMemo(() => {
         return suggestions.map((suggestion) => suggestion.leaderboard.songHash);
@@ -19,25 +21,35 @@ export default function MapSuggestionsPage() {
         });
     }, [songHashes]);
 
-    const suggestionCards = useMemo(() => {
-        return suggestions.map((suggestion, index) => (
-            <SuggestionCard
-                key={index}
-                suggestion={suggestion}
-                mapsData={mapsData}
-                currentlyPlaying={currentlyPlaying}
-                setCurrentlyPlaying={setCurrentlyPlaying}
-                index={index}
-            />
-        ));
-    }, [suggestions, mapsData, currentlyPlaying]);
+    const SuggestionRow = ({ index, style }) => {
+        const suggestion = suggestions[index];
+        return (
+            <div style={style} className='flex justify-center'>
+                <SuggestionCard
+                    suggestion={suggestion}
+                    mapsData={mapsData}
+                    index={index}
+                    play={play}
+                    pause={pause}
+                    currentlyPlaying={currentlyPlaying}
+                />
+            </div>
+        );
+    }
 
     return (
         <div className="relative text-white flex flex-col justify-center items-center">
             {suggestions.length > 0 ? (
                 <div className="mt-4">
                     <h2 className="text-2xl mb-5 text-center">Map Suggestions</h2>
-                    {suggestionCards}
+                    <List
+                        height={window.innerHeight - 100}
+                        itemCount={suggestions.length}
+                        itemSize={88}
+                        width={window.innerWidth}
+                    >
+                        {SuggestionRow}
+                    </List>
                 </div>
             ) : (
                 <div className="mt-4">

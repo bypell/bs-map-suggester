@@ -3,7 +3,7 @@ import SongPlayingOverlay from './common/SongPlayingOverlay';
 import scoresaberIcon from '../assets/scoresaber.svg';
 import { getDifficultyStyle, getDifficultyLabel } from '../utils/helpers';
 
-export default function SuggestionCard({ suggestion, mapsData, currentlyPlaying, setCurrentlyPlaying, index }) {
+export default function SuggestionCard({ suggestion, mapsData, index, play, pause, currentlyPlaying }) {
     const { leaderboard } = suggestion;
     const { coverImage, songName, songAuthorName, difficulty, stars } = leaderboard;
     const songHash = leaderboard.songHash.toLowerCase();
@@ -14,9 +14,13 @@ export default function SuggestionCard({ suggestion, mapsData, currentlyPlaying,
         <div className='bg-less-dark pr-2 mb-2 shadow-md w-[40rem]' key={index}>
             <div className='flex flex-row items-center'>
                 <div className='relative w-20 h-20'>
-                    <SongPlayingOverlay songUrl={songUrl} currentlyPlaying={currentlyPlaying}
-                        setCurrentlyPlaying={setCurrentlyPlaying}
-                        id={index} />
+                    <SongPlayingOverlay
+                        songUrl={songUrl}
+                        id={index}
+                        play={play}
+                        pause={pause}
+                        currentlyPlaying={currentlyPlaying}
+                    />
                     <img src={coverImage} alt="song cover image" />
                 </div>
                 <div className='flex flex-col ml-4'>
