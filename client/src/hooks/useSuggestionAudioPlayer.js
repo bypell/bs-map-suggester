@@ -5,19 +5,34 @@ const sharedAudio = new Audio();
 export function useSuggestionAudioPlayer() {
     const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
 
-    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+    const pauseAndWaitUntilActuallyPausedForRealBecauseTheresAnAudioPopOtherwise = () => {
+        return new Promise((resolve) => {
+            if (sharedAudio.paused) {
+                resolve();
+            } else {
+                const onPause = () => {
+                    sharedAudio.removeEventListener('pause', onPause);
+                    resolve();
+                };
+                sharedAudio.addEventListener('pause', onPause);
+                sharedAudio.pause();
+            }
+        });
+    };
 
     const play = async (songUrl, id) => {
-        sharedAudio.pause();
+        await pauseAndWaitUntilActuallyPausedForRealBecauseTheresAnAudioPopOtherwise();
         setCurrentlyPlaying(id);
-        await delay(100);
 
         if (sharedAudio.src !== songUrl) {
             sharedAudio.src = songUrl;
         }
 
         sharedAudio.volume = 0.2;
-        sharedAudio.autoplay = true;
+
+        sharedAudio.play().catch((err) => {
+            console.warn('Audio play error:', err);
+        });
     };
 
     const pause = () => {
