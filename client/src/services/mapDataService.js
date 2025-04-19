@@ -22,8 +22,8 @@ export async function getSongHashesToMapDataDictionary(hashArray) {
                 success = true;
             } catch (error) {
                 if (error.status === 429) {
-                    console.warn(`Beatsaver rate limit reached. Retrying batch ${index + 1} after 5 seconds...`);
-                    await new Promise(resolve => setTimeout(resolve, 5000));
+                    console.warn(`Beatsaver rate limit reached. Retrying batch ${index + 1} after 10 seconds...`);
+                    await new Promise(resolve => setTimeout(resolve, 10000));
                 } else {
                     console.error(`Error processing batch ${index + 1}:`, error);
                     throw error;
