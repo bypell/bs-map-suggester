@@ -22,12 +22,15 @@ export default function PlayerSelectPage() {
                 navigate(`/bs-map-suggester/suggestions`, { state: { suggestions } });
             } else {
                 console.error("No suggestions found.");
+                setErrorMessage("No suggestions found.");
             }
         } catch (error) {
             console.error("Failed to fetch suggestions:", error);
+            setLoading(false);
+            setErrorMessage("Failed to fetch suggestions. Please try again later.");
         }
     }
-    console.log(playerId);
+
     return (
         <div className="checkerboard h-screen w-screen relative text-white bg-dark flex flex-col justify-center items-center overflow-hidden">
             <div className={`flex flex-col items-center`}>
