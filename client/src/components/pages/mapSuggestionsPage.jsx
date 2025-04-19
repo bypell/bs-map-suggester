@@ -9,7 +9,7 @@ export default function MapSuggestionsPage() {
     const location = useLocation();
     const { suggestions = [] } = location.state || {};
     const [mapsData, setMapsData] = useState({});
-    const { play, pause, currentlyPlaying, isPlaying } = useSuggestionAudioPlayer();
+    const { play, pause, currentlyPlaying } = useSuggestionAudioPlayer();
 
     const songHashes = useMemo(() => {
         return suggestions.map((suggestion) => suggestion.leaderboard.songHash);
