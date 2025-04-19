@@ -5,8 +5,6 @@ const sharedAudio = new Audio();
 export function useSuggestionAudioPlayer() {
     const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
 
-    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-
     const play = async (songUrl, id) => {
         sharedAudio.pause();
         setCurrentlyPlaying(id);
