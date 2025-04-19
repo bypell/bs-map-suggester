@@ -72,8 +72,8 @@ export async function getMapSuggestionsForUser(playerId) {
     // console.log("topScores ", topScores);
 
     // sort using ratings
-    const mapPopularityWeight = 0.1;
-    const playerDistanceWeight = 0.3;
+    const mapPopularityWeight = 0.2;
+    const playerDistanceWeight = 0.2;
     const playerSimilarityWeight = 0.6;
 
     const topScoresSorted = topScores.sort((a, b) => {

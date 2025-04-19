@@ -1,44 +1,62 @@
 
-import React, { useState, useEffect } from 'react';
-
-let sharedAudio = null;
+import React, { useState, useEffect, useRef } from 'react';
 
 function SongPlayingOverlay({ songUrl, currentlyPlaying, setCurrentlyPlaying, id }) {
     const [isPlaying, setIsPlaying] = useState(false);
 
-    useEffect(() => {
-        if (!sharedAudio) {
-            sharedAudio = new Audio();
-        }
+    const audioRef = useRef(null);
 
-        const handleEnded = () => {
-            setIsPlaying(false);
-            setCurrentlyPlaying(null);
-        };
+    // handles when the song ends
+    const handleEnded = () => {
+        setIsPlaying(false);
+        setCurrentlyPlaying(null);
+    };
 
-        sharedAudio.addEventListener('ended', handleEnded);
+    const attachListeners = () => {
+        if (!audioRef.current) return;
+
+        audioRef.current.addEventListener('ended', handleEnded);
 
         return () => {
-            sharedAudio.removeEventListener('ended', handleEnded);
+            audioRef.current.removeEventListener('ended', handleEnded);
         };
-    }, [setCurrentlyPlaying]);
+    };
 
+    // audio setup and cleanup
+    useEffect(() => {
+        if (!audioRef.current) {
+            audioRef.current = new Audio();
+            audioRef.current.volume = 0.2;
+        }
+
+        audioRef.current.src = songUrl;
+
+        const cleanup = attachListeners();
+
+        return () => {
+            cleanup?.();
+            audioRef.current.pause();
+            audioRef.current.src = '';
+        };
+    }, [songUrl]);
+
+    // handles when another song preview button is pressed while this one is playing
     useEffect(() => {
         if (currentlyPlaying !== id && isPlaying) {
             setIsPlaying(false);
+            audioRef.current.pause();
         }
     }, [currentlyPlaying, id, isPlaying]);
 
+    // handles when the song is paused or played (button clicked)
     const togglePlayPause = () => {
         if (isPlaying) {
-            sharedAudio.pause();
+            audioRef.current.pause();
         } else {
             if (currentlyPlaying !== id) {
-                sharedAudio.src = songUrl;
-                sharedAudio.load();
+                audioRef.current.load();
             }
-            sharedAudio.volume = 0.2;
-            sharedAudio.play();
+            audioRef.current.play();
             setCurrentlyPlaying(id);
         }
         setIsPlaying(!isPlaying);

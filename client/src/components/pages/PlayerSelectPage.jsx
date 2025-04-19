@@ -37,7 +37,7 @@ export default function PlayerSelectPage() {
                     <LoaderButton text="Get Suggestions" onClick={handleClick} disabled={loading || !playerId} />
                 </div>
                 <div className={"flex flex-row mt-10"}>
-                    {loading && <Spinner />}
+                    {loading && <Spinner size={12} thickness={5} />}
                     {errorMessage && <div className="text-red-500 mt-4">Error: {errorMessage}</div>}
                 </div>
             </div>
