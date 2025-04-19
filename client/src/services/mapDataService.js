@@ -10,7 +10,7 @@ export async function getSongHashesToMapDataDictionary(hashArray) {
     let songHashToMapDataDictionary = {};
 
     // fetching each batch of 50 song hashes
-    // if there's a rate limit error, we retry after 5 seconds
+    // if there's a rate limit error, we retry after 10 seconds
     for (let index = 0; index < batches.length; index++) {
         let batch = batches[index];
         let success = false;
