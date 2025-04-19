@@ -48,6 +48,9 @@ export function useSuggestionAudioPlayer() {
         sharedAudio.addEventListener('ended', handleEnded);
         return () => {
             sharedAudio.removeEventListener('ended', handleEnded);
+            sharedAudio.pause();
+            sharedAudio.src = '';
+            setCurrentlyPlaying(null);
         };
     }, []);
 
