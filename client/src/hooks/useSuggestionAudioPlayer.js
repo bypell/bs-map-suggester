@@ -5,7 +5,7 @@ const sharedAudio = new Audio();
 export function useSuggestionAudioPlayer() {
     const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
 
-    const play = async (songUrl, id) => {
+    const play = (songUrl, id) => {
         sharedAudio.pause();
         setCurrentlyPlaying(id);
 
