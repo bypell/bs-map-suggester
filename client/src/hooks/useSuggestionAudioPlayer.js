@@ -6,11 +6,23 @@ export function useSuggestionAudioPlayer() {
     const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
 
     const play = (songUrl, id) => {
-        console.log('old:', currentlyPlaying, 'new:', id, 'new src:', songUrl);
-        sharedAudio.src = songUrl;
-        sharedAudio.load();
+        if (sharedAudio.src && !sharedAudio.paused) {
+            sharedAudio.pause();
+            sharedAudio.currentTime = 0;
+        }
+
+        if (sharedAudio.src !== songUrl) {
+            sharedAudio.src = songUrl;
+        }
+
         sharedAudio.volume = 0.2;
-        sharedAudio.play();
+
+        setTimeout(() => {
+            sharedAudio.play().catch(err => {
+                console.warn('Audio play error:', err);
+            });
+        }, 10);
+
         setCurrentlyPlaying(id);
     };
 
