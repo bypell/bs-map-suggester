@@ -11,7 +11,7 @@ export default function SuggestionCard({ suggestion, mapsData, index, play, paus
     const beatSaverId = mapsData[songHash]?.id;
 
     return (
-        <div className='bg-less-dark pr-2 mb-2 shadow-md w-[20rem] md:w-[40rem]' key={index}>
+        <div className='bg-less-dark pr-2 mb-2 shadow-md w-[90%] md:w-[40rem]' key={index}>
             <div className='flex flex-row items-center'>
                 <div className='relative w-20 h-20'>
                     <SongPlayingOverlay

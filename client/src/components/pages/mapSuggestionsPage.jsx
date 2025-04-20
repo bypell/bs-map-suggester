@@ -43,7 +43,7 @@ export default function MapSuggestionsPage() {
                 <div className="mt-4">
                     <h2 className="text-2xl mb-5 text-center">Map Suggestions</h2>
                     <List
-                        height={window.innerHeight}
+                        height={window.innerHeight - 68}
                         itemCount={suggestions.length}
                         itemSize={88}
                         width={window.innerWidth}
