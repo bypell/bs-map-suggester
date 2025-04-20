@@ -5,21 +5,23 @@ import Header from "../Header.jsx";
 import LoaderButton from "../LoaderButton.jsx";
 import PlayerIdInput from "../PlayerIdInput.jsx";
 import { getMapSuggestionsForUser } from '../../services/suggestMapsService.js';
+import { useSuggestions } from '../../context/suggestionsContext';
 
 export default function PlayerSelectPage() {
     const [playerId, setPlayerId] = useState('');
     const navigate = useNavigate();
+    const { setSuggestions } = useSuggestions();
     const [loading, setLoading] = useState(false);
     const [errorMessage, setErrorMessage] = useState(null);
 
     async function handleClick() {
         try {
             setLoading(true);
-            const suggestions =
-                await getMapSuggestionsForUser(playerId);
+            const suggestions = await getMapSuggestionsForUser(playerId);
             setLoading(false);
             if (suggestions) {
-                navigate(`/bs-map-suggester/suggestions`, { state: { suggestions } });
+                setSuggestions(suggestions);
+                navigate(`/bs-map-suggester/suggestions`);
             } else {
                 console.error("No suggestions found.");
                 setErrorMessage("No suggestions found.");

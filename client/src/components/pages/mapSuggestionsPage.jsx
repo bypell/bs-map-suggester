@@ -4,10 +4,10 @@ import { FixedSizeList as List } from 'react-window';
 import * as mapsDataService from '../../services/mapDataService';
 import SuggestionCard from '../SuggestionCard';
 import { useSuggestionAudioPlayer } from '../../hooks/useSuggestionAudioPlayer';
+import { useSuggestions } from '../../context/suggestionsContext';
 
 export default function MapSuggestionsPage() {
-    const location = useLocation();
-    const { suggestions = [] } = location.state || {};
+    const { suggestions } = useSuggestions();
     const [mapsData, setMapsData] = useState({});
     const { play, pause, currentlyPlaying } = useSuggestionAudioPlayer();
 

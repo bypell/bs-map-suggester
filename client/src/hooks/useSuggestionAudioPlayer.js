@@ -5,8 +5,18 @@ const sharedAudio = new Audio();
 export function useSuggestionAudioPlayer() {
     const [currentlyPlaying, setCurrentlyPlaying] = useState(null);
 
+    const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
     const play = async (songUrl, id) => {
+        sharedAudio.pause();
         setCurrentlyPlaying(id);
+
+        await delay(200);
+
+        if (!songUrl) {
+            console.warn('No song URL provided. Cannot play audio.');
+            return;
+        }
 
         if (sharedAudio.src !== songUrl) {
             sharedAudio.src = songUrl;
