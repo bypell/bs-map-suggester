@@ -1,5 +1,5 @@
 import React from 'react';
-import SongPlayingOverlay from './common/SongPlayingOverlay';
+import SongPlayingOverlay from './SongPlayingOverlay';
 import scoresaberIcon from '../assets/scoresaber.svg';
 import { getDifficultyStyle, getDifficultyLabel } from '../utils/helpers';
 
@@ -11,7 +11,7 @@ export default function SuggestionCard({ suggestion, mapsData, index, play, paus
     const beatSaverId = mapsData[songHash]?.id;
 
     return (
-        <div className='bg-less-dark pr-2 mb-2 shadow-md w-[40rem]' key={index}>
+        <div className='bg-less-dark pr-2 mb-2 shadow-md w-[20rem] md:w-[40rem]' key={index}>
             <div className='flex flex-row items-center'>
                 <div className='relative w-20 h-20'>
                     <SongPlayingOverlay
@@ -24,8 +24,8 @@ export default function SuggestionCard({ suggestion, mapsData, index, play, paus
                     <img src={coverImage} alt="song cover image" />
                 </div>
                 <div className='flex flex-col ml-4'>
-                    <h3 className="text-base">{songName}</h3>
-                    <p className='text-sm'>{songAuthorName}</p>
+                    <h3 className="text-base truncate max-w-[6rem] md:max-w-[18rem] lg:max-w-[25rem]" title={songName}>{songName}</h3>
+                    <p className='text-sm truncate max-w-[6rem] md:max-w-[20rem] lg:max-w-[25rem]' title={songAuthorName}>{songAuthorName}</p>
                 </div>
                 <div className='flex flex-col ml-auto items-end'>
                     <div className='flex flex-row items-center cursor-help' title={`${getDifficultyLabel(difficulty.difficulty)} difficulty`}>

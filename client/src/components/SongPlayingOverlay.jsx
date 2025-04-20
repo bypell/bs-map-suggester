@@ -5,6 +5,11 @@ function SongPlayingOverlay({ songUrl, id, play, pause, currentlyPlaying }) {
         if (currentlyPlaying === id) {
             pause();
         } else {
+            if (!songUrl) {
+                console.warn('No song URL provided. Cannot play audio.');
+                return;
+            }
+
             play(songUrl, id);
         }
     };

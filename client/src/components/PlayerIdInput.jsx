@@ -30,7 +30,7 @@ function PlayerIdInput({ onValidPlayerEntered, onChange, disabled }) {
     }
 
     return (<>
-        <div className="relative flex mx-4 " onFocus={() => setIsFocused(true)} onBlur={handleBlur}>
+        <div className="relative flex mx-4 z-10" onFocus={() => setIsFocused(true)} onBlur={handleBlur}>
             {/*player suggestions */}
             <div className={`overflow-y-auto overflow-x-hidden max-h-[calc(40vh-10px)] absolute pt-14 px-1 pb-2 w-full text-lg text-dark bg-less-dark rounded-xl transition-all duration-200 ease-in-out ${!playerSearchResults || playerSearchResults.length === 0 || !isFocused ? 'max-h-0 bg-opacity-0 shadow-none hidden' : 'bg-opacity-100 shadow-md'}`}
             >

@@ -11,9 +11,11 @@ export function useSuggestionAudioPlayer() {
         sharedAudio.pause();
         setCurrentlyPlaying(id);
 
+        console.log('Playing song:', songUrl, id);
+
         await delay(200);
 
-        if (!songUrl) {
+        if (songUrl === undefined || songUrl === null) {
             console.warn('No song URL provided. Cannot play audio.');
             return;
         }
