@@ -10,6 +10,10 @@ export default function MapSuggestionsPage() {
     const { suggestions } = useSuggestions();
     const [mapsData, setMapsData] = useState({});
     const { play, pause, currentlyPlaying } = useSuggestionAudioPlayer();
+    const [windowSize, setWindowSize] = useState({
+        width: window.innerWidth,
+        height: window.innerHeight,
+    });
 
     const songHashes = useMemo(() => {
         return suggestions.map((suggestion) => suggestion.leaderboard.songHash);
@@ -20,6 +24,20 @@ export default function MapSuggestionsPage() {
             setMapsData(data);
         });
     }, [songHashes]);
+
+    useEffect(() => {
+        const handleResize = () => {
+            setWindowSize({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            });
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+        };
+    }, []);
 
     const SuggestionRow = ({ index, style }) => {
         const suggestion = suggestions[index];
@@ -43,10 +61,10 @@ export default function MapSuggestionsPage() {
                 <div className="mt-4">
                     <h2 className="text-2xl mb-5 text-center">Map Suggestions</h2>
                     <List
-                        height={window.innerHeight - 68}
+                        height={windowSize.height - 68}
+                        width={windowSize.width}
                         itemCount={suggestions.length}
                         itemSize={88}
-                        width={window.innerWidth}
                     >
                         {SuggestionRow}
                     </List>
