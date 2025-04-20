@@ -37,7 +37,7 @@ export default function PlayerSelectPage() {
         <div className="checkerboard h-screen w-screen relative text-white bg-dark flex flex-col justify-center items-center overflow-hidden">
             <div className={`flex flex-col items-center`}>
                 <Header />
-                <div className="flex flex-col md:flex-row space-y-4 md:space-y-0">
+                <div className="flex flex-col w-full md:flex-row space-y-4 md:space-y-0">
                     <PlayerIdInput onValidPlayerEntered={(id) => setPlayerId(id)} onChange={() => setPlayerId(null)} disabled={loading} />
                     <LoaderButton text="Get Suggestions" onClick={handleClick} disabled={loading || !playerId} />
                 </div>

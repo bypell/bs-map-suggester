@@ -24,7 +24,7 @@ export default function SuggestionCard({ suggestion, mapsData, index, play, paus
                     <img src={coverImage} alt="song cover image" />
                 </div>
                 <div className='flex flex-col ml-4'>
-                    <h3 className="text-base truncate max-w-[6rem] md:max-w-[18rem] lg:max-w-[25rem]" title={songName}>{songName}</h3>
+                    <h3 className="text-base truncate max-w-[14rem] md:max-w-[20rem] lg:max-w-[25rem]" title={songName}>{songName}</h3>
                     <p className='text-sm truncate max-w-[6rem] md:max-w-[20rem] lg:max-w-[25rem]' title={songAuthorName}>{songAuthorName}</p>
                 </div>
                 <div className='flex flex-col ml-auto items-end'>

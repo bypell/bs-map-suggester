@@ -107,18 +107,18 @@ export async function getMapSuggestionsForUser(playerId) {
     const topScoresSortedCapped = topScoresSortedNoDuplicates.filter(score => score.leaderboard.stars <= maxStarRating);
     // console.log("topScoresSortedCapped ", topScoresSortedCapped);
 
-    // remove maps that the user already has a decent score on or played recently
+    // remove maps that the user already has a decent score on or played recently, and have a star rating of 0
     const [userTopScoresLonger, userRecentScores] = await Promise.all([
         scoresaberAPI.getPlayerTopPlays(playerId, 50),
         scoresaberAPI.getPlayerRecentPlays(playerId, 50)
     ]);
-
     const mapsUserHasPlayed = new Set([
         ...userTopScoresLonger.map(score => score.leaderboard.id),
         ...userRecentScores.map(score => score.leaderboard.id)
     ]);
-
-    const topScoresSortedCappedFiltered = topScoresSortedCapped.filter(score => !mapsUserHasPlayed.has(score.leaderboard.id));
+    const topScoresSortedCappedFiltered = topScoresSortedCapped.filter(
+        score => !mapsUserHasPlayed.has(score.leaderboard.id) && score.leaderboard.stars > 0
+    );
     console.log("topScoresSortedCappedFiltered ", topScoresSortedCappedFiltered);
 
 
@@ -134,10 +134,8 @@ export async function getMapSuggestionsForUser(playerId) {
         suggestions.push(suggestion);
     }
 
-
     console.log("suggestions ", suggestions);
     return suggestions.slice(0, 400);
-
 }
 
 
