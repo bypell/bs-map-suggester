@@ -47,11 +47,6 @@ app.use('/scoresaber', createProxyMiddleware({
     }
 }));
 
-app.get('*', (req, res) => {
-    console.log(`Redirecting invalid path (user probably refreshed suggestions page): ${req.path}`);
-    res.redirect('/');
-});
-
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT} in ${NODE_ENV} mode`);
 });
