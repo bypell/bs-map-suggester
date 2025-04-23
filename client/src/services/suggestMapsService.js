@@ -72,9 +72,9 @@ export async function getMapSuggestionsForUser(playerId) {
     // console.log("topScores ", topScores);
 
     // sort using ratings
-    const mapPopularityWeight = 0.2;
-    const playerDistanceWeight = 0.2;
-    const playerSimilarityWeight = 0.6;
+    const mapPopularityWeight = 0.1;
+    const playerDistanceWeight = 0.4;
+    const playerSimilarityWeight = 0.5;
 
     const topScoresSorted = topScores.sort((a, b) => {
         const aWeightedScore = (a.mapPopularityRating * mapPopularityWeight) +
@@ -120,7 +120,6 @@ export async function getMapSuggestionsForUser(playerId) {
         score => !mapsUserHasPlayed.has(score.leaderboard.id) && score.leaderboard.stars > 0
     );
     console.log("topScoresSortedCappedFiltered ", topScoresSortedCappedFiltered);
-
 
     const suggestions = [];
     for (let i = 0; i < topScoresSortedCappedFiltered.length; i++) {
