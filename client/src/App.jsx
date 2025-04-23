@@ -1,7 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import PlayerSelectPage from './components/pages/PlayerSelectPage';
-import ErrorPage from './components/pages/errorPage';
-import MapSuggestionsPage from './components/pages/mapSuggestionsPage';
+import ErrorPage from './components/pages/ErrorPage';
+import MapSuggestionsPage from './components/pages/MapSuggestionsPage';
 import { SuggestionsProvider } from './context/suggestionsContext';
 
 const router = createBrowserRouter([
@@ -13,6 +13,7 @@ const router = createBrowserRouter([
   {
     path: '/bs-map-suggester/suggestions/',
     element: <MapSuggestionsPage />,
+    errorElement: <ErrorPage />
   }
 ]);
 
