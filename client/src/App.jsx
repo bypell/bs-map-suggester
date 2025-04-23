@@ -4,22 +4,17 @@ import ErrorPage from './components/pages/errorPage';
 import MapSuggestionsPage from './components/pages/mapSuggestionsPage';
 import { SuggestionsProvider } from './context/suggestionsContext';
 
-const router = createBrowserRouter(
-  [
-    {
-      path: '/bs-map-suggester/',
-      element: <PlayerSelectPage />,
-      errorElement: <ErrorPage />
-    },
-    {
-      path: '/bs-map-suggester/suggestions/',
-      element: <MapSuggestionsPage />,
-    }
-  ],
+const router = createBrowserRouter([
   {
-    basename: '/bs-map-suggester',
+    path: '/bs-map-suggester/',
+    element: <PlayerSelectPage />,
+    errorElement: <ErrorPage />
+  },
+  {
+    path: '/bs-map-suggester/suggestions/',
+    element: <MapSuggestionsPage />,
   }
-);
+]);
 
 export default function App() {
   return (
