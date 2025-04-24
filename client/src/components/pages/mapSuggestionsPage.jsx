@@ -1,4 +1,3 @@
-import { useLocation } from 'react-router-dom';
 import { useEffect, useState, useMemo } from 'react';
 import { FixedSizeList as List } from 'react-window';
 import * as mapsDataService from '../../services/mapDataService';
