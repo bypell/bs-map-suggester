@@ -41,7 +41,7 @@ export default function MapSuggestionsPage() {
     const SuggestionRow = ({ index, style }) => {
         const suggestion = suggestions[index];
         return (
-            <div style={style} className='flex justify-center'>
+            <div style={style} className='flex justify-center' key={index}>
                 <SuggestionCard
                     suggestion={suggestion}
                     mapsData={mapsData}
@@ -55,7 +55,7 @@ export default function MapSuggestionsPage() {
     }
 
     return (
-        <div className="relative text-white flex flex-col justify-center items-center">
+        <div className="relative text-white flex flex-col justify-center items-center motion-opacity-in-0 motion-blur-in-sm motion-duration-1500">
             {suggestions.length > 0 ? (
                 <div className="mt-4">
                     <h2 className="text-2xl mb-5 text-center">Map Suggestions</h2>
