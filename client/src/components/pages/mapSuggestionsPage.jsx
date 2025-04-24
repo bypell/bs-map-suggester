@@ -19,9 +19,13 @@ export default function MapSuggestionsPage() {
     }, [suggestions]);
 
     useEffect(() => {
-        mapsDataService.getSongHashesToMapDataDictionary(songHashes).then((data) => {
-            setMapsData(data);
-        });
+        try {
+            mapsDataService.getSongHashesToMapDataDictionary(songHashes).then((data) => {
+                setMapsData(data);
+            });
+        } catch (error) {
+            console.error("Error fetching maps data:", error);
+        }
     }, [songHashes]);
 
     useEffect(() => {

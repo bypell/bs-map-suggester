@@ -12,12 +12,20 @@ export default function PlayerSelectPage() {
     const navigate = useNavigate();
     const { setSuggestions } = useSuggestions();
     const [loading, setLoading] = useState(false);
+    const [loadingProgressMessage, setLoadingProgressMessage] = useState("");
+    const [loadingStep, setLoadingStep] = useState(0);
     const [errorMessage, setErrorMessage] = useState(null);
+
+
+    function handleProgressMessage(step, message) {
+        setLoadingStep(step);
+        setLoadingProgressMessage(message);
+    }
 
     async function handleClick() {
         try {
             setLoading(true);
-            const suggestions = await getMapSuggestionsForUser(playerId);
+            const suggestions = await getMapSuggestionsForUser(playerId, handleProgressMessage);
             setLoading(false);
             if (suggestions) {
                 setSuggestions(suggestions);
@@ -34,15 +42,16 @@ export default function PlayerSelectPage() {
     }
 
     return (
-        <div className="checkerboard h-screen w-screen relative text-white bg-dark flex flex-col justify-center items-center overflow-hidden motion-opacity-in-0 motion-blur-in-sm motion-duration-1500">
-            <div className={`flex flex-col items-center`}>
+        <div className="checkerboard h-screen w-screen text-white bg-dark flex flex-col justify-center items-center overflow-hidden motion-opacity-in-0 motion-duration-1500">
+            <div className={'flex flex-col items-center relative'}>
                 <Header />
                 <div className="flex flex-col w-full md:flex-row space-y-4 md:space-y-0">
                     <PlayerIdInput onValidPlayerEntered={(id) => setPlayerId(id)} onChange={() => setPlayerId(null)} disabled={loading} />
                     <LoaderButton text="Get Suggestions" onClick={handleClick} disabled={loading || !playerId} />
                 </div>
-                <div className={"flex flex-row mt-10"}>
+                <div className={"flex flex-col mt-10 text-center items-center absolute top-full"}>
                     {loading && <Spinner size={12} thickness={5} />}
+                    {loadingProgressMessage && <div key={loadingStep} className='pt-8 font-semibold motion-preset-slide-up-md'>{loadingProgressMessage}</div>}
                     {errorMessage && <div className="text-red-500 mt-4">Error: {errorMessage}</div>}
                 </div>
             </div>

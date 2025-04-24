@@ -1,6 +1,7 @@
 import * as scoresaberAPI from '../api/scoresaber';
 
-export async function getMapSuggestionsForUser(playerId) {
+export async function getMapSuggestionsForUser(playerId, progressCallback = () => { }) {
+    progressCallback(0, "Fetching user data...");
     const userBasicData = await scoresaberAPI.getPlayerBasic(playerId);
 
     // take top 20 plays of user
@@ -10,6 +11,7 @@ export async function getMapSuggestionsForUser(playerId) {
     }
 
     // get 100 players above user on global leaderboard
+    progressCallback(1, "Getting players above user on leaderboard...");
     const playersToGet = 100;
     const userRank = userBasicData.rank;
     const playersPerPage = 50; // TODO: unlikely to change in the future so I'm hardcoding this for now. WE LOVE MAGIC NUMBERS!
@@ -38,6 +40,7 @@ export async function getMapSuggestionsForUser(playerId) {
     }
     // console.log("playerIds ", playerIds);
 
+    progressCallback(2, "Getting top plays of each player...");
     // get top 20 plays of each player above user on global leaderboard
     let topScoresOfPlayers = await Promise.all(
         playerIds.map(playerId => scoresaberAPI.getPlayerTopPlays(playerId, 20))
@@ -45,6 +48,7 @@ export async function getMapSuggestionsForUser(playerId) {
 
     console.log("fetched main data");
 
+    progressCallback(3, "Judging and sorting...");
     const playersToTopScores = {};
     for (let i = 0; i < playerIds.length; i++) {
         if (!topScoresOfPlayers[i]) {
@@ -134,6 +138,7 @@ export async function getMapSuggestionsForUser(playerId) {
     }
 
     console.log("suggestions ", suggestions);
+    progressCallback(4, "Done.");
     return suggestions.slice(0, 400);
 }
 
