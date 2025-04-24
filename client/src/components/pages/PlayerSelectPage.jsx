@@ -22,6 +22,12 @@ export default function PlayerSelectPage() {
         setLoadingProgressMessage(message);
     }
 
+    function handlePlayerSearchError(error) {
+        setLoading(false);
+        setErrorMessage("Failed to fetch player data. Please try again later.");
+        console.error("Player search error:", error);
+    }
+
     async function handleClick() {
         try {
             setLoading(true);
@@ -46,12 +52,12 @@ export default function PlayerSelectPage() {
             <div className={'flex flex-col items-center relative'}>
                 <Header />
                 <div className="flex flex-col w-full md:flex-row space-y-4 md:space-y-0">
-                    <PlayerIdInput onValidPlayerEntered={(id) => setPlayerId(id)} onChange={() => setPlayerId(null)} disabled={loading} />
+                    <PlayerIdInput onValidPlayerEntered={(id) => setPlayerId(id)} onChange={() => setPlayerId(null)} disabled={loading} errorCallback={handlePlayerSearchError} />
                     <LoaderButton text="Get Suggestions" onClick={handleClick} disabled={loading || !playerId} />
                 </div>
                 <div className={"flex flex-col mt-10 text-center items-center absolute top-full"}>
                     {loading && <Spinner size={12} thickness={5} />}
-                    {loadingProgressMessage && <div key={loadingStep} className='pt-8 font-semibold motion-preset-slide-up-md'>{loadingProgressMessage}</div>}
+                    {loadingProgressMessage && <div key={loadingStep} className='pt-8 font-mono motion-preset-slide-up-md'>{loadingProgressMessage}</div>}
                     {errorMessage && <div className="text-red-500 mt-4">Error: {errorMessage}</div>}
                 </div>
             </div>

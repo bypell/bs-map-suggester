@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { getPlayers } from '../api/scoresaber';
 
-export default function usePlayerSearch(inputValue) {
+export default function usePlayerSearch(inputValue, errorCallback) {
     const [playerSearchResults, setPlayerSearchResults] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -17,6 +17,7 @@ export default function usePlayerSearch(inputValue) {
                     .catch(error => {
                         console.error('Error fetching players:', error);
                         setIsLoading(false);
+                        errorCallback(error);
                     });
             } else {
                 setPlayerSearchResults([]);

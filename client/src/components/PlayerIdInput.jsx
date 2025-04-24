@@ -3,10 +3,14 @@ import usePlayerSearch from '../hooks/usePlayerSearch';
 import Spinner from './common/Spinner';
 import { truncateString } from '../utils/helpers';
 
-function PlayerIdInput({ onValidPlayerEntered, onChange, disabled }) {
+function PlayerIdInput({ onValidPlayerEntered, onChange, disabled, errorCallback }) {
     const [inputValue, setInputValue] = useState('');
     const [isFocused, setIsFocused] = useState(false);
-    const { playerSearchResults, isLoading } = usePlayerSearch(inputValue);
+    const { playerSearchResults, isLoading } = usePlayerSearch(inputValue, (error) => {
+        setInputValue('');
+        setIsFocused(false);
+        if (errorCallback) errorCallback(error);
+    });
 
 
     function handleChange(event) {

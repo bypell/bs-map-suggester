@@ -25,6 +25,7 @@ export default function MapSuggestionsPage() {
             });
         } catch (error) {
             console.error("Error fetching maps data:", error);
+            // todo: show message?
         }
     }, [songHashes]);
 
