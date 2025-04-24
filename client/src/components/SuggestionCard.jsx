@@ -10,24 +10,8 @@ export default function SuggestionCard({ suggestion, mapsData, index, play, paus
     const songUrl = mapsData[songHash]?.versions[0].previewURL;
     const beatSaverId = mapsData[songHash]?.id;
 
-
-
-    // Track whether the animation has already been played
-    const [hasAnimated, setHasAnimated] = useState(false);
-
-    // Add the animation class only if it hasn't been played yet
-    const animationClass = hasAnimated ? '' : 'motion-preset-fade-in-up';
-
-    // Mark the animation as played after the first render
-    useEffect(() => {
-        if (!hasAnimated) {
-            setHasAnimated(true);
-        }
-    }, []);
-
-
     return (
-        <div className={`bg-less-dark pr-2 mb-2 shadow-md w-[90%] md:w-[40rem] ${animationClass}`} key={index} >
+        <div className={`bg-less-dark pr-2 mb-2 shadow-md w-[90%] md:w-[40rem]`} key={index} >
             <div className='flex flex-row items-center'>
                 <div className='relative w-20 h-20'>
                     <SongPlayingOverlay
