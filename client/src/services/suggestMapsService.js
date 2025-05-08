@@ -1,7 +1,7 @@
 import * as scoresaberAPI from '../api/scoresaber';
 
 export async function getMapSuggestionsForUser(playerId, progressCallback = () => { }) {
-    progressCallback(0, "Fetching user data...");
+    progressCallback(0, "Fetching user data + top plays...");
     const userBasicData = await scoresaberAPI.getPlayerBasic(playerId);
 
     // take top 20 plays of user
@@ -10,9 +10,9 @@ export async function getMapSuggestionsForUser(playerId, progressCallback = () =
         return [];
     }
 
-    // get 100 players above user on global leaderboard
+    // get 150 players above user on global leaderboard
     progressCallback(1, "Getting players above user on leaderboard...");
-    const playersToGet = 100;
+    const playersToGet = 150;
     const userRank = userBasicData.rank;
     const playersPerPage = 50; // TODO: unlikely to change in the future so I'm hardcoding this for now. WE LOVE MAGIC NUMBERS!
     let userPlacementOnPage = userRank % playersPerPage;
@@ -76,9 +76,9 @@ export async function getMapSuggestionsForUser(playerId, progressCallback = () =
     // console.log("topScores ", topScores);
 
     // sort using ratings
-    const mapPopularityWeight = 0.1;
-    const playerDistanceWeight = 0.4;
-    const playerSimilarityWeight = 0.5;
+    const mapPopularityWeight = 0.3;
+    const playerDistanceWeight = 0.3;
+    const playerSimilarityWeight = 0.4;
 
     const topScoresSorted = topScores.sort((a, b) => {
         const aWeightedScore = (a.mapPopularityRating * mapPopularityWeight) +
