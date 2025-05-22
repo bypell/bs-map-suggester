@@ -28,6 +28,13 @@
     }(window.location))
   </script>
   <script src="https://unpkg.com/react-scan/dist/auto.global.js"></script>
+  <script>
+    if (!window.location.hostname.includes('localhost')) {
+      const script = document.createElement('script');
+      script.src = 'https://unpkg.com/react-scan/dist/auto.global.js';
+      document.head.appendChild(script);
+    }
+  </script>
   <title>BS Map Suggester</title>
 </head>
 

@@ -22,9 +22,6 @@ export default defineConfig(({ mode }) => {
           ],
         },
       }),
-      reactScan({
-        enable: process.env.NODE_ENV === 'development'
-      }),
     ],
     base: '/bs-map-suggester/',
   };
