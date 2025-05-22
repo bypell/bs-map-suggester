@@ -19,7 +19,7 @@ const SuggestionCard = ({ suggestion, mapsData, index }) => {
                         songUrl={songUrl}
                         id={index}
                     />}
-                    <img src={coverImage} alt="song cover image" className="w-full h-full object-cover" />
+                    <img src={coverImage} className="w-full h-full object-cover" />
                 </div>
 
                 {/* details */}
