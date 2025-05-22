@@ -64,10 +64,10 @@ export async function getMapSuggestionsForUser(playerId, progressCallback = () =
     }
     // console.log("playerIds ", playerIds);
 
-    // get top 40 plays of each player above user on global leaderboard
+    // get top plays of each player above user on global leaderboard
     progressCallback(2, "Getting top plays of each player...");
     let topScoresOfPlayers = await Promise.all(
-        otherPlayersSimplified.map(playerSimplified => scoresaberAPI.getPlayerTopPlays(playerSimplified.id, 40))
+        otherPlayersSimplified.map(playerSimplified => scoresaberAPI.getPlayerTopPlays(playerSimplified.id, 30))
     );
 
     console.log("fetched main data");
