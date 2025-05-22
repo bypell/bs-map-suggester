@@ -21,7 +21,9 @@ export default defineConfig({
         ],
       },
     }),
-    reactScan(),
+    reactScan({
+      enable: import.meta.env.PROD ? false : true,
+    }),
   ],
   base: '/bs-map-suggester/',
 })
