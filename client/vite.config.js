@@ -8,7 +8,6 @@ const ReactCompilerConfig = {
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => {
-  console.log('Vite mode:', mode);
   return {
     server: {
       proxy: {
@@ -23,7 +22,9 @@ export default defineConfig(({ mode }) => {
           ],
         },
       }),
-      reactScan(),
+      reactScan({
+        enable: process.env.NODE_ENV === 'development'
+      }),
     ],
     base: '/bs-map-suggester/',
   };
