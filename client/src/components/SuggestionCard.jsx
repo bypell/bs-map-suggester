@@ -13,25 +13,39 @@ const SuggestionCard = ({ suggestion, mapsData, index }) => {
     return (
         <div className="bg-less-dark pr-2 mb-2 shadow-md w-[90%] md:w-[40rem]" key={index}>
             <div className="flex flex-row items-center">
-                <div className="relative w-20 h-20">
+                {/* song cover and overlay */}
+                <div className="relative w-20 h-20 flex-shrink-0">
                     <SongPlayingOverlay
                         songUrl={songUrl}
                         id={index}
                     />
-                    <img src={coverImage} alt="song cover image" />
+                    <img src={coverImage} alt="song cover image" className="w-full h-full object-cover" />
                 </div>
-                <div className="flex flex-col ml-4">
-                    <h3 className="text-base truncate max-w-[14rem] md:max-w-[20rem] lg:max-w-[25rem]" title={songName}>
+
+                {/* details */}
+                <div className="flex flex-col ml-4 flex-grow min-w-0">
+                    <h3
+                        className="text-base truncate md:text-lg"
+                        title={songName}
+                    >
                         {songName}
                     </h3>
-                    <p className="text-sm truncate max-w-[6rem] md:max-w-[20rem] lg:max-w-[25rem]" title={songAuthorName}>
+                    <p
+                        className="text-sm truncate md:text-base"
+                        title={songAuthorName}
+                    >
                         {songAuthorName}
                     </p>
                 </div>
-                <div className="flex flex-col ml-auto items-end">
-                    <div className="flex flex-row items-center cursor-help" title={`${getDifficultyLabel(difficulty.difficulty)} difficulty`}>
+
+                {/* diff and links to scoresaber etc. */}
+                <div className="flex flex-col ml-4 items-end flex-shrink-0">
+                    <div
+                        className="flex flex-row items-center cursor-help whitespace-nowrap"
+                        title={`${getDifficultyLabel(difficulty.difficulty)} difficulty`}
+                    >
                         <i className={`fas fa-star ${getDifficultyStyle(difficulty.difficulty)}`}></i>
-                        <p>{stars}</p>
+                        <p className="ml-1">{stars}</p>
                     </div>
                     <div className="flex flex-row mt-1 space-x-1 content-center">
                         <a
