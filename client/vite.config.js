@@ -7,23 +7,24 @@ const ReactCompilerConfig = {
 };
 
 // https://vite.dev/config/
-export default defineConfig({
-  server: {
-    proxy: {
-      // '/api': 'https://scoresaber.com',
-    },
-  },
-  plugins: [
-    react({
-      babel: {
-        plugins: [
-          ["babel-plugin-react-compiler", ReactCompilerConfig],
-        ],
+export default defineConfig(({ mode }) => {
+  console.log('Vite mode:', mode);
+  return {
+    server: {
+      proxy: {
+        // '/api': 'https://scoresaber.com',
       },
-    }),
-    reactScan({
-      enable: import.meta.env.PROD ? false : true,
-    }),
-  ],
-  base: '/bs-map-suggester/',
-})
+    },
+    plugins: [
+      react({
+        babel: {
+          plugins: [
+            ["babel-plugin-react-compiler", ReactCompilerConfig],
+          ],
+        },
+      }),
+      reactScan(),
+    ],
+    base: '/bs-map-suggester/',
+  };
+});
