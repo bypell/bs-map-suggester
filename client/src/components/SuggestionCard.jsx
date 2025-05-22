@@ -15,10 +15,10 @@ const SuggestionCard = ({ suggestion, mapsData, index }) => {
             <div className="flex flex-row items-center">
                 {/* song cover and overlay */}
                 <div className="relative w-20 h-20 flex-shrink-0">
-                    <SongPlayingOverlay
+                    {songUrl && <SongPlayingOverlay
                         songUrl={songUrl}
                         id={index}
-                    />
+                    />}
                     <img src={coverImage} alt="song cover image" className="w-full h-full object-cover" />
                 </div>
 
