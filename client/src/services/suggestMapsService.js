@@ -101,8 +101,8 @@ export async function getMapSuggestionsForUser(playerId, progressCallback = () =
 
     // sort using ratings
     const mapPopularityWeight = 0.2;
-    const playerDistanceWeight = 0.3;
-    const playerSimilarityWeight = 0.4;
+    const playerDistanceWeight = 0.2;
+    const playerSimilarityWeight = 0.5;
 
     const topScoresSorted = topScores.sort((a, b) => {
         const aWeightedScore = (a.mapPopularityRating * mapPopularityWeight) +
