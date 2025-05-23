@@ -48,7 +48,7 @@ export default function PlayerSelectPage() {
     }
 
     return (
-        <div className="checkerboard h-screen w-screen text-white bg-dark flex flex-col justify-center items-center overflow-hidden motion-opacity-in-0 motion-duration-1500">
+        <div className="checkerboard h-screen w-screen text-white bg-dark flex flex-col pt-4 md:pt-0 md:justify-center items-center overflow-hidden motion-opacity-in-0 motion-duration-1500">
             <div className={'flex flex-col items-center relative'}>
                 <Header />
                 <div className="flex flex-col w-full md:flex-row space-y-4 md:space-y-0">
@@ -56,8 +56,8 @@ export default function PlayerSelectPage() {
                     <LoaderButton text="Get Suggestions" onClick={handleClick} disabled={loading || !playerId} />
                 </div>
                 <div className={"flex flex-col mt-10 text-center items-center absolute top-full"}>
-                    {loading && <Spinner size={12} thickness={5} />}
-                    {loadingProgressMessage && <div key={loadingStep} className='pt-8 font-mono motion-preset-slide-up-md'>{loadingProgressMessage}</div>}
+                    {loading && <Spinner size={12} thickness={4} />}
+                    {loadingProgressMessage && <div key={loadingStep} className='pt-8 text-gray-400 font-mono font-semibold motion-preset-slide-up-md'>{loadingProgressMessage}</div>}
                     {errorMessage && <div className="text-red-500 mt-4">Error: {errorMessage}</div>}
                 </div>
             </div>

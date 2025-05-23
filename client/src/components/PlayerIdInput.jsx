@@ -34,7 +34,7 @@ function PlayerIdInput({ onValidPlayerEntered, onChange, disabled, errorCallback
     }
 
     return (<>
-        <div className="relative flex mx-4 z-10 w-full" onFocus={() => setIsFocused(true)} onBlur={handleBlur}>
+        <div className="relative flex md:mx-4 z-10 w-full" onFocus={() => setIsFocused(true)} onBlur={handleBlur}>
             {/*player suggestions */}
             <div className={`overflow-y-auto overflow-x-hidden max-h-[calc(40vh-10px)] absolute pt-14 px-1 pb-2 w-full text-lg text-dark bg-less-dark rounded-xl transition-all duration-200 ease-in-out ${!playerSearchResults || playerSearchResults.length === 0 || !isFocused ? 'max-h-0 bg-opacity-0 shadow-none hidden' : 'bg-opacity-100 shadow-md'}`}
             >
@@ -59,12 +59,13 @@ function PlayerIdInput({ onValidPlayerEntered, onChange, disabled, errorCallback
                     onChange={handleChange}
                     onFocus={() => setIsFocused(true)}
                     disabled={disabled}
+                    autoComplete="off"
                     className={`h-12 w-full px-5 py-2 text-lg z-10 focus:placeholder-transparent text-center text-dark bg-white rounded-xl shadow-md outline-none transition-all duration-200 focus:ring-2 focus:ring-main hover:shadow-lg hover:duration-100 ${disabled && 'opacity-50 cursor-default'}`}
                     placeholder="Enter your scoresaber username"
                 />
                 {isLoading && isFocused && (
-                    <div className="absolute inset-y-0 right-0 mr-1 flex items-center pr-7 pointer-events-none">
-                        <Spinner size='5' thickness='2' />
+                    <div className="absolute inset-y-0 right-0 mr-1 flex items-center pr-4 pointer-events-none">
+                        <Spinner size={6} thickness={3} />
                     </div>
                 )}
             </div>
