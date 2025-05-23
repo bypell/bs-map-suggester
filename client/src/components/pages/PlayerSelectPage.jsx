@@ -48,7 +48,7 @@ export default function PlayerSelectPage() {
     }
 
     return (
-        <div className="checkerboard h-screen w-screen text-white bg-dark flex flex-col pt-4 md:pt-0 md:justify-center items-center overflow-hidden motion-opacity-in-0 motion-duration-1500">
+        <div className="checkerboard h-screen w-screen text-white flex flex-col pt-4 md:pt-0 md:justify-center items-center overflow-hidden motion-opacity-in-0 motion-duration-1500">
             <div className={'flex flex-col items-center relative'}>
                 <Header />
                 <div className="flex flex-col w-full md:flex-row space-y-4 md:space-y-0">
