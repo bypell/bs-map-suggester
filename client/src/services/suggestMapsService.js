@@ -4,8 +4,8 @@ export async function getMapSuggestionsForUser(playerId, progressCallback = () =
     progressCallback(0, "Fetching user data + top plays...");
     const userBasicData = await scoresaberAPI.getPlayerBasic(playerId);
 
-    // take top 20 plays of user
-    const topScoresOfUser = await scoresaberAPI.getPlayerTopPlays(playerId, 20);
+    // take top 40 plays of user
+    const topScoresOfUser = await scoresaberAPI.getPlayerTopPlays(playerId, 40);
     if (!topScoresOfUser) {
         return [];
     }
