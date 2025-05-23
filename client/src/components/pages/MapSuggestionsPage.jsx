@@ -60,8 +60,10 @@ function MapSuggestionsPage() {
     return (
         <div className="relative text-white flex flex-col justify-center items-center motion-opacity-in-0 motion-blur-in-sm motion-duration-1500">
             {suggestions && suggestions.length > 0 ? (
-                <div className="mt-4">
-                    <h2 className="text-2xl mb-5 text-center">Map Suggestions</h2>
+                <div className="mt-4 items-center flex flex-col w-[90%] md:w-[40rem]">
+                    <div className="shadow-2xl relative z-50 w-full">
+                        <h2 className="text-2xl text-center pb-5">Map Suggestions</h2>
+                    </div>
                     <List
                         height={windowSize.height - 68}
                         width={windowSize.width}
@@ -75,8 +77,9 @@ function MapSuggestionsPage() {
                 <div className="mt-4">
                     <h2 className="text-2xl">No suggestions available</h2>
                 </div>
-            )}
-        </div>
+            )
+            }
+        </div >
     );
 }
 
